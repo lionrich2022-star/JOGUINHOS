@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Jogo da Cobrinha</title>
+<link rel="stylesheet" href="fonts.css">
+<style>
+:root{
+  /* layout: coluna única centrada — placar em cima, tabuleiro, d-pad, rodapé */
+  --bg:#f1f3fb;
+  --panel:#ffffff;
+  --board:#e7ebf8;
+  --board-line:#d8ddf0;
+  --text:#1d2342;
+  --muted:#5b6388;
+  --accent:#16a34a;
+  --accent-soft:#dcfce7;
+  --danger:#e11d48;
+  --shadow:0 10px 30px rgba(29,35,66,.12);
+  --font-display:"Baloo 2","Nunito",system-ui,sans-serif;
+  --font-body:"Nunito",system-ui,sans-serif;
+}
+:root:not([data-theme="light"]){
+  @media (prefers-color-scheme: dark){
+    --bg:#0d1126; --panel:#171d3b; --board:#131837; --board-line:#1e2550;
+    --text:#edf0ff; --muted:#9aa3d0; --accent:#4ade80; --accent-soft:#143324;
+    --danger:#fb7185; --shadow:0 10px 30px rgba(0,0,0,.45);
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0d1126; --panel:#171d3b; --board:#131837; --board-line:#1e2550;
+  --text:#edf0ff; --muted:#9aa3d0; --accent:#4ade80; --accent-soft:#143324;
+  --danger:#fb7185; --shadow:0 10px 30px rgba(0,0,0,.45);
+  color-scheme:dark;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:var(--font-body);
+  display:flex;flex-direction:column;align-items:center;
+  padding:16px;gap:14px;
+  touch-action:manipulation;
+  -webkit-tap-highlight-color:transparent;
+  transition:background .3s,color .3s;
+}
+header{
+  width:min(92vw,440px);
+  display:flex;align-items:center;justify-content:space-between;gap:10px;
+}
+h1{
+  font-family:var(--font-display);
+  font-size:clamp(1.35rem,5vw,1.7rem);
+  letter-spacing:.3px;
+  text-wrap:balance;
+  background:linear-gradient(90deg,#4ade80,#22d3ee,#a78bfa,#fb7185);
+  -webkit-background-clip:text;background-clip:text;
+  -webkit-text-fill-color:transparent;color:transparent;
+}
+.icon-btn{
+  width:42px;height:42px;border-radius:12px;border:1px solid var(--board-line);
+  background:var(--panel);color:var(--text);cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:var(--shadow);flex:none;
+}
+.icon-btn:focus-visible,.dpad button:focus-visible,.big-btn:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.icon-btn svg{width:20px;height:20px}
+.scores{
+  width:min(92vw,440px);
+  display:flex;gap:10px;
+}
+.chip{
+  flex:1;background:var(--panel);border:1px solid var(--board-line);
+  border-radius:14px;padding:8px 14px;box-shadow:var(--shadow);
+  display:flex;flex-direction:column;align-items:center;gap:1px;
+}
+.chip .label{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+.chip .value{font-family:var(--font-display);font-size:1.3rem;font-weight:800;font-variant-numeric:tabular-nums}
+#score{color:var(--accent)}
+#speed{color:#22d3ee}
+.stage{
+  position:relative;width:min(92vw,440px);aspect-ratio:1/1;
+  border-radius:18px;overflow:hidden;box-shadow:var(--shadow);
+  border:1px solid var(--board-line);
+  background:var(--board);
+}
+canvas{display:block;width:100%;height:100%}
+.overlay{
+  position:absolute;inset:0;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:10px;text-align:center;
+  background:color-mix(in srgb,var(--board) 72%,transparent);
+  backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px);
+  padding:20px;
+}
+.overlay.hidden{display:none}
+.overlay .big{
+  font-family:var(--font-display);font-size:clamp(1.5rem,6vw,2rem);font-weight:800;
+}
+.overlay .sub{color:var(--muted);font-weight:700}
+.overlay .emoji{font-size:2.6rem;line-height:1}
+#newRecord{
+  display:none;background:var(--accent-soft);color:var(--accent);
+  border:1px solid var(--accent);border-radius:999px;
+  padding:4px 14px;font-weight:800;font-size:.85rem;
+}
+.big-btn{
+  margin-top:6px;border:none;cursor:pointer;
+  background:linear-gradient(135deg,#22c55e,#16a34a);
+  color:#fff;font-family:var(--font-display);font-weight:800;
+  font-size:1.05rem;padding:12px 30px;border-radius:999px;
+  box-shadow:0 8px 20px rgba(34,197,94,.4);
+  transition:transform .12s;
+}
+.big-btn:active{transform:scale(.95)}
+.hint{color:var(--muted);font-size:.8rem;font-weight:700;text-align:center;width:min(92vw,440px)}
+.dpad{
+  display:grid;grid-template-columns:repeat(3,64px);grid-template-rows:repeat(2,64px);
+  gap:8px;justify-content:center;
+}
+.dpad button{
+  border:1px solid var(--board-line);background:var(--panel);color:var(--text);
+  border-radius:16px;font-size:1.4rem;cursor:pointer;box-shadow:var(--shadow);
+  display:flex;align-items:center;justify-content:center;
+  user-select:none;-webkit-user-select:none;
+}
+.dpad button:active{background:var(--accent-soft);transform:scale(.94)}
+.dpad .up{grid-column:2;grid-row:1}
+.dpad .left{grid-column:1;grid-row:2}
+.dpad .down{grid-column:2;grid-row:2}
+.dpad .right{grid-column:3;grid-row:2}
+@media (hover:hover) and (pointer:fine){ .dpad{display:none} .hint.touch{display:none} }
+@media (hover:none){ .hint.keys{display:none} }
+footer{
+  margin-top:auto;padding-top:6px;
+  color:var(--muted);font-size:.72rem;font-weight:600;letter-spacing:.03em;
+}
+@media (prefers-reduced-motion:reduce){ *{transition:none!important;animation:none!important} }
+/* nome do jogador e ranking */
+.nm-wrap{display:flex;flex-direction:column;gap:4px;align-items:center}
+.nm-label{font-size:.78rem;font-weight:800;color:var(--muted)}
+.nm-input{width:min(230px,72vw);text-align:center;font:inherit;font-weight:800;font-size:1rem;padding:9px 12px;border-radius:12px;border:2px solid var(--line);background:var(--panel);color:var(--text)}
+.nm-input:focus{outline:none;border-color:var(--accent)}
+.nm-row{display:flex;gap:8px;align-items:center;justify-content:center;width:min(94vw,var(--rkw,440px))}
+.nm-row .nm-input{flex:1;max-width:260px;text-align:left}
+.nm-card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:10px 14px;box-shadow:var(--shadow)}
+.rk-card{width:min(94vw,var(--rkw,440px));background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:12px 14px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:6px}
+.screen .rk-card{width:100%}
+.rk-title{font-family:var(--font-display);font-weight:800;font-size:1.05rem}
+.rk-row{display:flex;align-items:center;gap:8px;font-weight:800;font-size:.92rem;padding:4px 8px;border-radius:10px}
+.rk-row.me{background:var(--accent-soft)}
+.rk-pos{width:2rem;text-align:center;flex:none}
+.rk-name{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rk-score{color:var(--accent);font-variant-numeric:tabular-nums;flex:none}
+.rk-empty{color:var(--muted);font-weight:700;font-size:.85rem}
+.rk-line{font-weight:800;color:var(--accent);text-align:center;text-wrap:balance;min-height:1.2em}
+#overOverlay .emoji,#winOverlay .emoji{font-size:2.1rem}
+#overOverlay,#winOverlay{gap:7px}
+.overlay{overflow-y:auto;justify-content:safe center}
+</style>
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#0d1126">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Jogo da Cobrinha">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="icon" type="image/png" href="icons/icon-192.png">
+<style>
+#installWrap button{background:none;border:none;color:var(--accent);font:inherit;font-weight:800;
+  cursor:pointer;text-decoration:underline;padding:0}
+#installWrap button:disabled{cursor:default;text-decoration:none;color:var(--muted)}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>🐍 Cobrinha</h1>
+  <button class="icon-btn" id="themeBtn" aria-label="Trocar tema" title="Trocar tema">
+    <svg id="iconSun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+    <svg id="iconMoon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="display:none"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+  </button>
+</header>
+
+<div class="scores">
+  <div class="chip"><span class="label">Pontos</span><span class="value" id="score">0</span></div>
+  <div class="chip"><span class="label">Recorde</span><span class="value" id="best">0</span></div>
+  <div class="chip"><span class="label">Velocidade</span><span class="value" id="speed">1.0x</span></div>
+</div>
+
+<div class="stage" id="stage">
+  <canvas id="game"></canvas>
+
+  <div class="overlay" id="startOverlay">
+    <div class="emoji">🐍</div>
+    <div class="big">Jogo da Cobrinha</div>
+    <div class="sub">Coma as frutas e não bata nas paredes!</div>
+    <div class="nm-wrap"><label class="nm-label" for="nameStart">Quem vai jogar?</label><input class="nm-input" id="nameStart" maxlength="12" placeholder="Seu nome" autocomplete="off"></div>
+    <button class="big-btn" id="startBtn">Jogar</button>
+  </div>
+
+  <div class="overlay hidden" id="overOverlay">
+    <div class="emoji">💥</div>
+    <div class="big">Fim de jogo!</div>
+    <div class="sub" id="finalScore">Você fez 0 pontos</div>
+    <span id="newRecord">🏆 Novo recorde!</span>
+    <div class="rk-line" id="rankLine"></div>
+    <div class="nm-wrap"><label class="nm-label" for="nameOver">Próximo jogador:</label><input class="nm-input" id="nameOver" maxlength="12" placeholder="Seu nome" autocomplete="off"></div>
+    <button class="big-btn" id="againBtn">Jogar de novo</button>
+  </div>
+
+  <div class="overlay hidden" id="pauseOverlay">
+    <div class="emoji">⏸️</div>
+    <div class="big">Pausado</div>
+    <button class="big-btn" id="resumeBtn">Continuar</button>
+  </div>
+</div>
+
+<div class="dpad">
+  <button class="up" data-dir="up" aria-label="Cima">▲</button>
+  <button class="left" data-dir="left" aria-label="Esquerda">◀</button>
+  <button class="down" data-dir="down" aria-label="Baixo">▼</button>
+  <button class="right" data-dir="right" aria-label="Direita">▶</button>
+</div>
+
+<p class="hint keys">Use as setas do teclado (ou W A S D). Espaço pausa.</p>
+<p class="hint touch">Use os botões ou deslize o dedo no tabuleiro.</p>
+
+<section class="rk-card" aria-label="Ranking"><div class="rk-title" id="rkTitle">🏆 Ranking</div><div id="rkList"></div></section>
+
+<footer>Criado por Wesley de Jesus<span id="installWrap" hidden> · <button id="installBtn" type="button">📲 Instalar no aparelho</button></span></footer>
+
+<script>
+(function(){
+  "use strict";
+  /* ===== Jogador e ranking (fica salvo neste aparelho) ===== */
+  var NAME_KEY = "joguinhos-jogador";
+  function lsGet(k){ try{ return localStorage.getItem(k); }catch(e){ return null; } }
+  function lsSet(k,v){ try{ localStorage.setItem(k,v); }catch(e){} }
+  function cleanName(n){ return String(n==null?"":n).replace(/\s+/g," ").trim().slice(0,12); }
+
+  function makeRanking(cfg){
+    var key = cfg.key, low = !!cfg.low;
+    function storeKey(){ return "joguinhos-rank-"+key; }
+    function readList(){
+      try{ var a = JSON.parse(lsGet(storeKey())||"[]"); return Array.isArray(a) ? a : []; }catch(e){ return []; }
+    }
+    function cmp(x,y){
+      return low ? (x.s-y.s)||((x.t||0)-(y.t||0)) : (y.s-x.s)||((x.d||0)-(y.d||0));
+    }
+    function nameNow(){ return cleanName(lsGet(NAME_KEY)) || "Jogador"; }
+    function rowsAll(){ return cfg.rows ? cfg.rows() : readList().sort(cmp); }
+    function render(){
+      var box = document.getElementById("rkList"); if(!box) return;
+      var rows = rowsAll().slice(0,5), me = nameNow().toLowerCase();
+      box.textContent = "";
+      if(!rows.length){
+        var e = document.createElement("div"); e.className = "rk-empty";
+        e.textContent = "Ninguém no ranking ainda. Seja o primeiro!"; box.appendChild(e); return;
+      }
+      var medals = ["🥇","🥈","🥉"];
+      rows.forEach(function(r,i){
+        var d = document.createElement("div");
+        d.className = "rk-row" + (String(r.n).toLowerCase()===me ? " me" : "");
+        var a = document.createElement("span"); a.className = "rk-pos"; a.textContent = medals[i] || (i+1)+"º";
+        var b = document.createElement("span"); b.className = "rk-name"; b.textContent = r.n;
+        var c = document.createElement("span"); c.className = "rk-score"; c.textContent = cfg.fmt ? cfg.fmt(r) : r.s;
+        d.appendChild(a); d.appendChild(b); d.appendChild(c); box.appendChild(d);
+      });
+    }
+    // registra a pontuação (guarda só a melhor de cada jogador) e devolve a posição
+    function submit(score, extra){
+      if(!(score>0)) return null;
+      var name = nameNow(), id = name.toLowerCase(), a = readList(), found = -1;
+      for(var i=0;i<a.length;i++){ if(String(a[i].n).toLowerCase()===id){ found = i; break; } }
+      var entry = {n:name, s:score, t:extra||0, d:Date.now()};
+      if(found>=0){ if(cmp(entry,a[found])<0) a[found] = entry; } else { a.push(entry); }
+      a.sort(cmp); a = a.slice(0,50);
+      lsSet(storeKey(), JSON.stringify(a));
+      var rows = rowsAll(), pos = 0;
+      for(var j=0;j<rows.length;j++){ if(String(rows[j].n).toLowerCase()===id){ pos = j+1; break; } }
+      render();
+      return {name:name, pos:pos};
+    }
+    function line(res){
+      if(!res || !res.pos) return "";
+      return res.pos===1 ? "🥇 "+res.name+" está em 1º lugar no ranking!" : "🏅 "+res.name+" está em "+res.pos+"º lugar no ranking";
+    }
+    function init(){
+      var inputs = document.querySelectorAll(".nm-input"), saved = cleanName(lsGet(NAME_KEY));
+      Array.prototype.forEach.call(inputs,function(inp){
+        inp.value = saved;
+        inp.addEventListener("input",function(){
+          lsSet(NAME_KEY, cleanName(inp.value));
+          Array.prototype.forEach.call(inputs,function(o){ if(o!==inp) o.value = inp.value; });
+          render();
+        });
+      });
+      render();
+    }
+    return {init:init, render:render, submit:submit, line:line, name:nameNow,
+            setKey:function(k){ key = k; render(); }};
+  }
+
+  var RK = makeRanking({key:"cobrinha"});
+  var GRID = 21;
+  var BASE_MS = 170, MIN_MS = 70, STEP_MS = 4;
+  var FOOD_COLORS = ["#fb7185","#fbbf24","#22d3ee","#a78bfa","#f97316","#f472b6"];
+
+  var canvas = document.getElementById("game");
+  var ctx = canvas.getContext("2d");
+  var stage = document.getElementById("stage");
+  var scoreEl = document.getElementById("score");
+  var bestEl = document.getElementById("best");
+  var speedEl = document.getElementById("speed");
+  var startOv = document.getElementById("startOverlay");
+  var overOv = document.getElementById("overOverlay");
+  var pauseOv = document.getElementById("pauseOverlay");
+  var finalScoreEl = document.getElementById("finalScore");
+  var newRecordEl = document.getElementById("newRecord");
+
+  function store(key, val){ try{ if(val===undefined) return localStorage.getItem(key); localStorage.setItem(key,val); }catch(e){ return null; } }
+
+  var best = parseInt(store("snake-best")||"0",10)||0;
+  bestEl.textContent = best;
+
+  /* ----- tema ----- */
+  var savedTheme = store("snake-theme");
+  if(savedTheme==="light"||savedTheme==="dark"){ document.documentElement.setAttribute("data-theme",savedTheme); }
+  function syncThemeIcon(){
+    var dark = document.documentElement.getAttribute("data-theme")!=="light";
+    document.getElementById("iconSun").style.display = dark ? "" : "none";
+    document.getElementById("iconMoon").style.display = dark ? "none" : "";
+  }
+  syncThemeIcon();
+  document.getElementById("themeBtn").addEventListener("click",function(){
+    var cur = document.documentElement.getAttribute("data-theme")!=="light" ? "dark" : "light";
+    var next = cur==="dark" ? "light" : "dark";
+    document.documentElement.setAttribute("data-theme",next);
+    store("snake-theme",next);
+    syncThemeIcon();
+    draw();
+  });
+
+  function cssVar(name){ return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
+
+  /* ----- canvas nítido ----- */
+  var cell = 20, px = GRID*cell;
+  function resize(){
+    var size = stage.clientWidth;
+    var dpr = window.devicePixelRatio||1;
+    canvas.width = Math.round(size*dpr);
+    canvas.height = Math.round(size*dpr);
+    cell = canvas.width/GRID;
+    draw();
+  }
+  window.addEventListener("resize",resize);
+
+  /* ----- estado ----- */
+  var snake, dir, dirQueue, food, foodColor, eaten, score, interval, running, dead, timer, pulse=0;
+
+  function reset(){
+    var c = Math.floor(GRID/2);
+    snake = [{x:c-1,y:c},{x:c-2,y:c},{x:c-3,y:c}];
+    dir = {x:1,y:0};
+    dirQueue = [];
+    eaten = 0; score = 0; interval = BASE_MS;
+    dead = false;
+    scoreEl.textContent = "0";
+    speedEl.textContent = "1.0x";
+    placeFood();
+  }
+
+  function placeFood(){
+    var free = [];
+    for(var y=0;y<GRID;y++)for(var x=0;x<GRID;x++){
+      var hit=false;
+      for(var i=0;i<snake.length;i++){ if(snake[i].x===x&&snake[i].y===y){hit=true;break;} }
+      if(!hit) free.push({x:x,y:y});
+    }
+    food = free[Math.floor(Math.random()*free.length)];
+    foodColor = FOOD_COLORS[eaten%FOOD_COLORS.length];
+  }
+
+  function setDir(name){
+    var map = {up:{x:0,y:-1},down:{x:0,y:1},left:{x:-1,y:0},right:{x:1,y:0}};
+    var d = map[name]; if(!d) return;
+    var last = dirQueue.length ? dirQueue[dirQueue.length-1] : dir;
+    if(d.x===-last.x && d.y===-last.y) return;       // não pode dar ré
+    if(d.x===last.x && d.y===last.y) return;
+    if(dirQueue.length<3) dirQueue.push(d);
+  }
+
+  function tick(){
+    if(!running) return;
+    if(dirQueue.length) dir = dirQueue.shift();
+    var head = {x:snake[0].x+dir.x, y:snake[0].y+dir.y};
+
+    if(head.x<0||head.y<0||head.x>=GRID||head.y>=GRID){ return gameOver(); }
+    for(var i=0;i<snake.length-1;i++){ if(snake[i].x===head.x&&snake[i].y===head.y){ return gameOver(); } }
+
+    snake.unshift(head);
+    if(head.x===food.x&&head.y===food.y){
+      eaten++; score += 10;
+      scoreEl.textContent = score;
+      interval = Math.max(MIN_MS, BASE_MS - eaten*STEP_MS);
+      speedEl.textContent = (BASE_MS/interval).toFixed(1)+"x";
+      placeFood();
+    } else {
+      snake.pop();
+    }
+    draw();
+    timer = setTimeout(tick, interval);
+  }
+
+  function gameOver(){
+    running = false; dead = true;
+    clearTimeout(timer);
+    draw();
+    finalScoreEl.textContent = "Você fez "+score+" ponto"+(score===1?"":"s");
+    var record = score>best;
+    if(record){ best = score; bestEl.textContent = best; store("snake-best",String(best)); }
+    newRecordEl.style.display = record ? "inline-block" : "none";
+    document.getElementById("rankLine").textContent = RK.line(RK.submit(score));
+    overOv.classList.remove("hidden");
+  }
+
+  function start(){
+    clearTimeout(timer);
+    reset();
+    startOv.classList.add("hidden");
+    overOv.classList.add("hidden");
+    pauseOv.classList.add("hidden");
+    running = true;
+    draw();
+    timer = setTimeout(tick, interval);
+  }
+
+  function togglePause(){
+    if(dead || !startOv.classList.contains("hidden")) return;
+    if(running){
+      running = false; clearTimeout(timer);
+      pauseOv.classList.remove("hidden");
+    } else {
+      pauseOv.classList.add("hidden");
+      running = true;
+      timer = setTimeout(tick, interval);
+    }
+  }
+
+  /* ----- desenho ----- */
+  function rr(x,y,w,h,r){
+    ctx.beginPath();
+    ctx.moveTo(x+r,y);
+    ctx.arcTo(x+w,y,x+w,y+h,r);
+    ctx.arcTo(x+w,y+h,x,y+h,r);
+    ctx.arcTo(x,y+h,x,y,r);
+    ctx.arcTo(x,y,x+w,y,r);
+    ctx.closePath();
+  }
+  function lerp(a,b,t){ return a+(b-a)*t; }
+  function mix(c1,c2,t){
+    return "rgb("+Math.round(lerp(c1[0],c2[0],t))+","+Math.round(lerp(c1[1],c2[1],t))+","+Math.round(lerp(c1[2],c2[2],t))+")";
+  }
+
+  function draw(){
+    if(!snake) return;
+    pulse += 0.25;
+    ctx.fillStyle = cssVar("--board")||"#131837";
+    ctx.fillRect(0,0,canvas.width,canvas.height);
+
+    // xadrez bem sutil
+    ctx.fillStyle = cssVar("--board-line")||"#1e2550";
+    ctx.globalAlpha = 0.35;
+    for(var y=0;y<GRID;y++)for(var x=0;x<GRID;x++){
+      if((x+y)%2===0) ctx.fillRect(x*cell,y*cell,cell,cell);
+    }
+    ctx.globalAlpha = 1;
+
+    // fruta (pulsando)
+    var fr = cell*0.36 + Math.sin(pulse)*cell*0.03;
+    var fx = (food.x+0.5)*cell, fy = (food.y+0.5)*cell;
+    ctx.save();
+    ctx.shadowColor = foodColor; ctx.shadowBlur = cell*0.5;
+    ctx.fillStyle = foodColor;
+    ctx.beginPath(); ctx.arc(fx,fy,fr,0,Math.PI*2); ctx.fill();
+    ctx.restore();
+    // brilho e cabinho
+    ctx.fillStyle = "rgba(255,255,255,.55)";
+    ctx.beginPath(); ctx.arc(fx-fr*0.3,fy-fr*0.35,fr*0.22,0,Math.PI*2); ctx.fill();
+    ctx.strokeStyle = "#65a30d"; ctx.lineWidth = Math.max(2,cell*0.08); ctx.lineCap="round";
+    ctx.beginPath(); ctx.moveTo(fx,fy-fr); ctx.quadraticCurveTo(fx+fr*0.4,fy-fr*1.35,fx+fr*0.6,fy-fr*1.1); ctx.stroke();
+
+    // cobra: gradiente da cabeça ao rabo
+    var cHead=[74,222,128], cTail=[14,116,144];
+    var n = snake.length;
+    for(var i=n-1;i>=0;i--){
+      var s = snake[i];
+      var t = n===1?0:i/(n-1);
+      var pad = cell*0.07 + t*cell*0.06;
+      ctx.fillStyle = dead && i===0 ? (cssVar("--danger")||"#fb7185") : mix(cHead,cTail,t);
+      rr(s.x*cell+pad, s.y*cell+pad, cell-pad*2, cell-pad*2, cell*0.3);
+      ctx.fill();
+    }
+
+    // olhos da cabeça
+    var h = snake[0];
+    var ex = (h.x+0.5)*cell, ey = (h.y+0.5)*cell;
+    var ox = dir.x*cell*0.16, oy = dir.y*cell*0.16;
+    var sx = dir.x===0 ? cell*0.16 : 0;
+    var sy = dir.y===0 ? cell*0.16 : 0;
+    var er = cell*0.1;
+    ctx.fillStyle="#fff";
+    ctx.beginPath(); ctx.arc(ex+ox+sx,ey+oy+sy,er,0,Math.PI*2); ctx.fill();
+    ctx.beginPath(); ctx.arc(ex+ox-sx,ey+oy-sy,er,0,Math.PI*2); ctx.fill();
+    ctx.fillStyle="#1d2342";
+    ctx.beginPath(); ctx.arc(ex+ox+sx+dir.x*er*0.4,ey+oy+sy+dir.y*er*0.4,er*0.5,0,Math.PI*2); ctx.fill();
+    ctx.beginPath(); ctx.arc(ex+ox-sx+dir.x*er*0.4,ey+oy-sy+dir.y*er*0.4,er*0.5,0,Math.PI*2); ctx.fill();
+  }
+
+  /* ----- controles ----- */
+  document.addEventListener("keydown",function(e){
+    if(e.target&&e.target.tagName==="INPUT"){ if(e.key==="Enter"){ e.preventDefault(); e.target.blur(); if(!startOv.classList.contains("hidden")||dead) start(); } return; }
+    var k = e.key;
+    var map = {ArrowUp:"up",ArrowDown:"down",ArrowLeft:"left",ArrowRight:"right",
+               w:"up",s:"down",a:"left",d:"right",W:"up",S:"down",A:"left",D:"right"};
+    if(map[k]){
+      e.preventDefault();
+      if(!running && !dead && !startOv.classList.contains("hidden")){ start(); }
+      setDir(map[k]);
+    } else if(k===" "){
+      e.preventDefault();
+      if(!startOv.classList.contains("hidden")) start();
+      else if(dead) start();
+      else togglePause();
+    } else if((k==="Enter") && (dead || !startOv.classList.contains("hidden"))){
+      e.preventDefault(); start();
+    }
+  });
+
+  var dpadBtns = document.querySelectorAll(".dpad button");
+  for(var b=0;b<dpadBtns.length;b++){
+    (function(btn){
+      function press(e){ e.preventDefault(); setDir(btn.getAttribute("data-dir")); }
+      btn.addEventListener("pointerdown",press);
+      btn.addEventListener("click",function(e){ e.preventDefault(); });
+    })(dpadBtns[b]);
+  }
+
+  // deslizar no tabuleiro
+  var tsx=0,tsy=0;
+  stage.addEventListener("touchstart",function(e){
+    if(e.touches.length===1){ tsx=e.touches[0].clientX; tsy=e.touches[0].clientY; }
+  },{passive:true});
+  stage.addEventListener("touchend",function(e){
+    var dx = e.changedTouches[0].clientX-tsx;
+    var dy = e.changedTouches[0].clientY-tsy;
+    if(Math.abs(dx)<18 && Math.abs(dy)<18) return;
+    if(Math.abs(dx)>Math.abs(dy)) setDir(dx>0?"right":"left");
+    else setDir(dy>0?"down":"up");
+  },{passive:true});
+
+  document.getElementById("startBtn").addEventListener("click",start);
+  document.getElementById("againBtn").addEventListener("click",start);
+  document.getElementById("resumeBtn").addEventListener("click",togglePause);
+  document.addEventListener("visibilitychange",function(){
+    if(document.hidden && running) togglePause();
+  });
+
+  reset();
+  resize();
+  running = false;
+  draw();
+  setInterval(function(){ if(!running) draw(); },400); // fruta pulsa mesmo parada
+  RK.init();
+})();
+</script>
+<script>
+(function(){
+  var wrap=document.getElementById('installWrap'), btn=document.getElementById('installBtn');
+  if(!wrap||!btn) return;
+  var standalone=(window.matchMedia&&window.matchMedia('(display-mode: standalone)').matches)||window.navigator.standalone;
+  if(standalone) return;
+  var deferred=null;
+  window.addEventListener('beforeinstallprompt',function(e){ e.preventDefault(); deferred=e; wrap.hidden=false; });
+  btn.addEventListener('click',function(){
+    if(!deferred) return;
+    deferred.prompt();
+    deferred.userChoice.then(function(){ deferred=null; wrap.hidden=true; });
+  });
+  window.addEventListener('appinstalled',function(){ wrap.hidden=true; });
+  if(/iphone|ipad|ipod/i.test(navigator.userAgent)){
+    btn.textContent='📲 No iPhone: toque em Compartilhar e depois em Adicionar à Tela de Início';
+    btn.disabled=true; wrap.hidden=false;
+  }
+})();
+if('serviceWorker' in navigator){
+  window.addEventListener('load',function(){ navigator.serviceWorker.register('sw.js').catch(function(){}); });
+}
+</script>
+</body>
+</html>

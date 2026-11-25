@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Davi e Golias</title>
+<link rel="stylesheet" href="fonts.css">
+<style>
+:root{
+  /* layout: coluna única — título, telas (menu, história, quiz, ordem, fim), ranking, rodapé */
+  --bg:#fbf3e6; --panel:#ffffff; --line:#ecdcc0; --text:#3a2a14; --muted:#7a6448;
+  --accent:#c2410c; --accent-soft:#ffedd5; --gold:#d99a06; --ok:#16a34a; --bad:#e11d48;
+  --shadow:0 10px 30px rgba(23,48,77,.14);
+  --font-display:"Baloo 2","Nunito",system-ui,sans-serif; --font-body:"Nunito",system-ui,sans-serif;
+  --w:min(94vw,480px); --rkw:480px;
+}
+:root:not([data-theme="light"]){
+  @media (prefers-color-scheme: dark){
+    --bg:#16110b; --panel:#241b11; --line:#3d2f1d; --text:#fbf1e2; --muted:#c8b08c;
+    --accent:#fb923c; --accent-soft:#3a2412; --gold:#fbbf24; --ok:#4ade80; --bad:#fb7185; --shadow:0 10px 30px rgba(0,0,0,.45); color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#16110b; --panel:#241b11; --line:#3d2f1d; --text:#fbf1e2; --muted:#c8b08c;
+  --accent:#fb923c; --accent-soft:#3a2412; --gold:#fbbf24; --ok:#4ade80; --bad:#fb7185; --shadow:0 10px 30px rgba(0,0,0,.45); color-scheme:dark;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{min-height:100%}
+body{background:var(--bg);color:var(--text);font-family:var(--font-body);display:flex;flex-direction:column;align-items:center;padding:12px;gap:10px;
+  touch-action:manipulation;-webkit-tap-highlight-color:transparent;transition:background .3s,color .3s}
+header{width:var(--w);display:flex;align-items:center;justify-content:space-between;gap:10px}
+h1{font-family:var(--font-display);font-size:clamp(1.3rem,5vw,1.7rem);
+  background:linear-gradient(90deg,#fbbf24,#fb923c,#f87171);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent}
+.hbtns{display:flex;gap:8px}
+.icon-btn{width:42px;height:42px;border-radius:12px;border:1px solid var(--line);background:var(--panel);color:var(--text);cursor:pointer;flex:none;
+  display:flex;align-items:center;justify-content:center;box-shadow:var(--shadow);font-size:1.15rem}
+.icon-btn svg{width:20px;height:20px}
+button:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.screen{width:var(--w);display:none;flex-direction:column;gap:10px;align-items:center}
+.screen.on{display:flex}
+.card{width:100%;background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:14px;box-shadow:var(--shadow)}
+.hero{width:100%;border-radius:18px;overflow:hidden;border:1px solid var(--line);box-shadow:var(--shadow)}
+.hero svg,.scene svg{display:block;width:100%;height:auto}
+.menu-btn{width:100%;display:flex;align-items:center;gap:12px;background:var(--panel);border:2px solid var(--line);border-radius:18px;padding:12px 14px;color:var(--text);
+  font:inherit;cursor:pointer;text-align:left;box-shadow:var(--shadow);transition:transform .12s}
+.menu-btn:active{transform:scale(.98)}
+.menu-btn .ic{font-size:2rem;line-height:1}
+.menu-btn b{font-family:var(--font-display);font-size:1.15rem;display:block}
+.menu-btn small{color:var(--muted);font-weight:800}
+.menu-btn .rec{display:block;color:var(--gold);font-weight:800;font-size:.8rem}
+.bar{width:100%;display:flex;align-items:center;justify-content:space-between;gap:8px}
+.pill{background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:6px 12px;font-weight:800;font-size:.85rem;box-shadow:var(--shadow)}
+.pill b{color:var(--accent)}
+.back{border:1px solid var(--line);background:var(--panel);color:var(--text);font:inherit;font-weight:800;border-radius:999px;padding:7px 14px;cursor:pointer;box-shadow:var(--shadow)}
+.scene{width:100%;border-radius:18px;overflow:hidden;border:1px solid var(--line);box-shadow:var(--shadow);background:#cfe6ff}
+#fCanvas{width:100%;height:auto;aspect-ratio:360/400;display:block;border-radius:18px;border:1px solid var(--line);box-shadow:var(--shadow);touch-action:none;cursor:crosshair;background:#cfe6ff}
+.tip{width:100%;text-align:center;font-weight:800;color:var(--muted);font-size:.9rem;text-wrap:balance}
+.story-text{width:100%;background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:14px;box-shadow:var(--shadow);min-height:132px}
+.story-text h2{font-family:var(--font-display);font-size:1.2rem;margin-bottom:4px}
+.story-text p{font-size:1.02rem;font-weight:700;line-height:1.45}
+.story-text .ref{display:block;margin-top:6px;color:var(--muted);font-size:.8rem;font-weight:800}
+.nav{width:100%;display:flex;gap:8px}
+.btn{flex:1;border:none;cursor:pointer;background:linear-gradient(135deg,#fb923c,#c2410c);color:#fff;font-family:var(--font-display);font-weight:800;font-size:1.02rem;
+  padding:11px 16px;border-radius:999px;box-shadow:0 8px 20px rgba(194,65,12,.35);transition:transform .12s}
+.btn.alt{background:var(--panel);color:var(--text);border:2px solid var(--line);box-shadow:none}
+.btn.gold{background:linear-gradient(135deg,#fbbf24,#f59e0b);color:#2a1b00;box-shadow:0 8px 20px rgba(245,158,11,.35)}
+.btn:active{transform:scale(.96)} .btn:disabled{opacity:.45;box-shadow:none}
+.q{font-family:var(--font-display);font-weight:800;font-size:1.25rem;text-wrap:balance;text-align:center;margin-bottom:10px}
+.opts{display:flex;flex-direction:column;gap:8px;width:100%}
+.opt{width:100%;text-align:left;background:var(--panel);border:2px solid var(--line);color:var(--text);font:inherit;font-weight:800;font-size:1.02rem;border-radius:14px;padding:12px 14px;cursor:pointer;box-shadow:var(--shadow)}
+.opt.ok{border-color:var(--ok);background:color-mix(in srgb,var(--ok) 22%,var(--panel))}
+.opt.bad{border-color:var(--bad);background:color-mix(in srgb,var(--bad) 22%,var(--panel))}
+.opt:disabled{cursor:default}
+.fb{width:100%;min-height:3.4em;text-align:center;font-weight:800;text-wrap:balance}
+.fb small{display:block;color:var(--muted);margin-top:2px}
+.order-list{width:100%;display:flex;flex-direction:column;gap:7px}
+.ev{width:100%;text-align:left;background:var(--panel);border:2px solid var(--line);color:var(--text);font:inherit;font-weight:800;border-radius:14px;padding:10px 12px;cursor:pointer;box-shadow:var(--shadow);display:flex;gap:10px;align-items:center}
+.ev .n{width:28px;height:28px;border-radius:50%;background:var(--accent-soft);color:var(--accent);display:flex;align-items:center;justify-content:center;flex:none;font-family:var(--font-display)}
+.ev.done{border-color:var(--ok);background:color-mix(in srgb,var(--ok) 20%,var(--panel));cursor:default}
+.ev.done .n{background:var(--ok);color:#fff}
+.shake{animation:shake .35s}
+@keyframes shake{25%{transform:translateX(-7px)}75%{transform:translateX(7px)}}
+.stars{font-size:2.4rem;letter-spacing:4px;text-align:center}
+.end-title{font-family:var(--font-display);font-weight:800;font-size:1.5rem;text-align:center;text-wrap:balance}
+.end-sub{text-align:center;font-weight:700;color:var(--muted);text-wrap:balance}
+.verse{width:100%;text-align:center;font-weight:800;color:var(--gold);text-wrap:balance}
+footer{margin-top:auto;padding-top:6px;color:var(--muted);font-size:.72rem;font-weight:600;letter-spacing:.03em}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+/* nome do jogador e ranking */
+.nm-wrap{display:flex;flex-direction:column;gap:4px;align-items:center}
+.nm-label{font-size:.78rem;font-weight:800;color:var(--muted)}
+.nm-input{width:min(230px,72vw);text-align:center;font:inherit;font-weight:800;font-size:1rem;padding:9px 12px;border-radius:12px;border:2px solid var(--line);background:var(--panel);color:var(--text)}
+.nm-input:focus{outline:none;border-color:var(--accent)}
+.nm-row{display:flex;gap:8px;align-items:center;justify-content:center;width:min(94vw,var(--rkw,440px))}
+.nm-row .nm-input{flex:1;max-width:260px;text-align:left}
+.nm-card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:10px 14px;box-shadow:var(--shadow)}
+.rk-card{width:min(94vw,var(--rkw,440px));background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:12px 14px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:6px}
+.screen .rk-card{width:100%}
+.rk-title{font-family:var(--font-display);font-weight:800;font-size:1.05rem}
+.rk-row{display:flex;align-items:center;gap:8px;font-weight:800;font-size:.92rem;padding:4px 8px;border-radius:10px}
+.rk-row.me{background:var(--accent-soft)}
+.rk-pos{width:2rem;text-align:center;flex:none}
+.rk-name{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rk-score{color:var(--accent);font-variant-numeric:tabular-nums;flex:none}
+.rk-empty{color:var(--muted);font-weight:700;font-size:.85rem}
+.rk-line{font-weight:800;color:var(--accent);text-align:center;text-wrap:balance;min-height:1.2em}
+#overOverlay .emoji,#winOverlay .emoji{font-size:2.1rem}
+#overOverlay,#winOverlay{gap:7px}
+.overlay{overflow-y:auto;justify-content:safe center}
+
+</style>
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#16110b">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Davi e Golias">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="icon" type="image/png" href="icons/icon-192.png">
+<style>
+#installWrap button{background:none;border:none;color:var(--accent);font:inherit;font-weight:800;
+  cursor:pointer;text-decoration:underline;padding:0}
+#installWrap button:disabled{cursor:default;text-decoration:none;color:var(--muted)}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>🎯 Davi e Golias</h1>
+  <div class="hbtns">
+    <button class="icon-btn" id="soundBtn" aria-label="Som ligado/desligado" title="Som"><span id="soundIcon">🔊</span></button>
+    <button class="icon-btn" id="themeBtn" aria-label="Trocar tema" title="Trocar tema">
+      <svg id="iconSun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+      <svg id="iconMoon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="display:none"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+    </button>
+  </div>
+</header>
+
+<!-- MENU -->
+<div class="screen on" id="sMenu">
+  <div class="hero" id="hero"></div>
+  <div class="card nm-wrap"><label class="nm-label" for="nameMenu">Quem vai brincar?</label><input class="nm-input" id="nameMenu" maxlength="12" placeholder="Escreva seu nome" autocomplete="off"></div>
+  <button class="menu-btn" id="mStory"><span class="ic">📖</span><span><b>A história de Davi</b><small>Leia e ouça, página por página</small></span></button>
+  <button class="menu-btn" id="mQuiz"><span class="ic">❓</span><span><b>Quiz de Davi</b><small>10 perguntas sobre a história</small><span class="rec" id="recQuiz"></span></span></button>
+  <button class="menu-btn" id="mOrder"><span class="ic">🔢</span><span><b>Ordene a história</b><small>Coloque os fatos na ordem certa</small><span class="rec" id="recOrder"></span></span></button>
+  <button class="menu-btn" id="mFunda"><span class="ic">🎯</span><span><b>A funda de Davi</b><small>Mire na testa do gigante Golias</small><span class="rec" id="recFunda"></span></span></button>
+</div>
+
+<!-- HISTÓRIA -->
+<div class="screen" id="sStory">
+  <div class="bar"><button class="back" id="stBack">← Menu</button><span class="pill">Página <b id="stPg">1</b>/8</span></div>
+  <div class="scene" id="scene"></div>
+  <div class="story-text"><h2 id="stTitle"></h2><p id="stText"></p><span class="ref" id="stRef"></span></div>
+  <div class="nav"><button class="btn alt" id="stPrev">◀ Voltar</button><button class="btn alt" id="stSpeak" aria-label="Ouvir esta página">🔊 Ouvir</button><button class="btn" id="stNext">Próxima ▶</button></div>
+</div>
+
+<!-- QUIZ -->
+<div class="screen" id="sQuiz">
+  <div class="bar"><button class="back" id="qBack">← Menu</button><span class="pill">Pergunta <b id="qN">1</b>/10</span><span class="pill">Pontos <b id="qPts">0</b></span></div>
+  <div class="card"><div class="q" id="qText"></div><div class="opts" id="qOpts"></div></div>
+  <div class="fb" id="qFb"></div>
+  <div class="nav"><button class="btn gold" id="qNext" disabled>Próxima ▶</button></div>
+</div>
+
+<!-- ORDEM -->
+<div class="screen" id="sOrder">
+  <div class="bar"><button class="back" id="oBack">← Menu</button><span class="pill">Erros <b id="oErr">0</b></span><span class="pill">Certos <b id="oOk">0</b>/6</span></div>
+  <div class="card"><div class="q" style="margin-bottom:0">Toque nos fatos na ordem em que aconteceram. O primeiro é o 1º!</div></div>
+  <div class="order-list" id="oList"></div>
+  <div class="fb" id="oFb"></div>
+</div>
+
+<!-- FUNDA -->
+<div class="screen" id="sFunda">
+  <div class="bar"><button class="back" id="fBack">← Menu</button><span class="pill">Nível <b id="fLv">1</b></span><span class="pill">Pedras <b id="fSt">●●●●●</b></span><span class="pill">Pontos <b id="fPt">0</b></span></div>
+  <canvas id="fCanvas" width="360" height="400" aria-label="Davi com a funda e o gigante Golias"></canvas>
+  <div class="tip">Encoste no jogo, <b>puxe para trás</b> (para a esquerda e para baixo) e solte. Mire na testa do Golias!</div>
+</div>
+
+<!-- FIM -->
+<div class="screen" id="sEnd">
+  <div class="card" style="display:flex;flex-direction:column;gap:8px;align-items:center">
+    <div class="stars" id="eStars"></div>
+    <div class="end-title" id="eTitle"></div>
+    <div class="end-sub" id="eSub"></div>
+    <div class="verse" id="eVerse"></div>
+    <div class="rk-line" id="rankLine"></div>
+    <div class="nm-wrap"><label class="nm-label" for="nameOver">Próximo jogador:</label><input class="nm-input" id="nameOver" maxlength="12" placeholder="Escreva seu nome" autocomplete="off"></div>
+  </div>
+  <div class="nav"><button class="btn gold" id="eAgain">Jogar de novo</button><button class="btn alt" id="eMenu">Menu</button></div>
+</div>
+
+<section class="rk-card" aria-label="Ranking"><div class="rk-title" id="rkTitle">🏆 Ranking</div><div id="rkList"></div></section>
+
+<footer>Criado por Wesley de Jesus<span id="installWrap" hidden> · <button id="installBtn" type="button">📲 Instalar no aparelho</button></span></footer>
+
+<script>
+(function(){
+  "use strict";
+  /* ===== Jogador e ranking (fica salvo neste aparelho) ===== */
+  var NAME_KEY = "joguinhos-jogador";
+  function lsGet(k){ try{ return localStorage.getItem(k); }catch(e){ return null; } }
+  function lsSet(k,v){ try{ localStorage.setItem(k,v); }catch(e){} }
+  function cleanName(n){ return String(n==null?"":n).replace(/\s+/g," ").trim().slice(0,12); }
+
+  function makeRanking(cfg){
+    var key = cfg.key, low = !!cfg.low;
+    function storeKey(){ return "joguinhos-rank-"+key; }
+    function readList(){
+      try{ var a = JSON.parse(lsGet(storeKey())||"[]"); return Array.isArray(a) ? a : []; }catch(e){ return []; }
+    }
+    function cmp(x,y){
+      return low ? (x.s-y.s)||((x.t||0)-(y.t||0)) : (y.s-x.s)||((x.d||0)-(y.d||0));
+    }
+    function nameNow(){ return cleanName(lsGet(NAME_KEY)) || "Jogador"; }
+    function rowsAll(){ return cfg.rows ? cfg.rows() : readList().sort(cmp); }
+    function render(){
+      var box = document.getElementById("rkList"); if(!box) return;
+      var rows = rowsAll().slice(0,5), me = nameNow().toLowerCase();
+      box.textContent = "";
+      if(!rows.length){
+        var e = document.createElement("div"); e.className = "rk-empty";
+        e.textContent = "Ninguém no ranking ainda. Seja o primeiro!"; box.appendChild(e); return;
+      }
+      var medals = ["🥇","🥈","🥉"];
+      rows.forEach(function(r,i){
+        var d = document.createElement("div");
+        d.className = "rk-row" + (String(r.n).toLowerCase()===me ? " me" : "");
+        var a = document.createElement("span"); a.className = "rk-pos"; a.textContent = medals[i] || (i+1)+"º";
+        var b = document.createElement("span"); b.className = "rk-name"; b.textContent = r.n;
+        var c = document.createElement("span"); c.className = "rk-score"; c.textContent = cfg.fmt ? cfg.fmt(r) : r.s;
+        d.appendChild(a); d.appendChild(b); d.appendChild(c); box.appendChild(d);
+      });
+    }
+    // registra a pontuação (guarda só a melhor de cada jogador) e devolve a posição
+    function submit(score, extra){
+      if(!(score>0)) return null;
+      var name = nameNow(), id = name.toLowerCase(), a = readList(), found = -1;
+      for(var i=0;i<a.length;i++){ if(String(a[i].n).toLowerCase()===id){ found = i; break; } }
+      var entry = {n:name, s:score, t:extra||0, d:Date.now()};
+      if(found>=0){ if(cmp(entry,a[found])<0) a[found] = entry; } else { a.push(entry); }
+      a.sort(cmp); a = a.slice(0,50);
+      lsSet(storeKey(), JSON.stringify(a));
+      var rows = rowsAll(), pos = 0;
+      for(var j=0;j<rows.length;j++){ if(String(rows[j].n).toLowerCase()===id){ pos = j+1; break; } }
+      render();
+      return {name:name, pos:pos};
+    }
+    function line(res){
+      if(!res || !res.pos) return "";
+      return res.pos===1 ? "🥇 "+res.name+" está em 1º lugar no ranking!" : "🏅 "+res.name+" está em "+res.pos+"º lugar no ranking";
+    }
+    function init(){
+      var inputs = document.querySelectorAll(".nm-input"), saved = cleanName(lsGet(NAME_KEY));
+      Array.prototype.forEach.call(inputs,function(inp){
+        inp.value = saved;
+        inp.addEventListener("input",function(){
+          lsSet(NAME_KEY, cleanName(inp.value));
+          Array.prototype.forEach.call(inputs,function(o){ if(o!==inp) o.value = inp.value; });
+          render();
+        });
+      });
+      render();
+    }
+    return {init:init, render:render, submit:submit, line:line, name:nameNow,
+            setKey:function(k){ key = k; render(); }};
+  }
+
+  var RK = makeRanking({key:"davi-quiz", fmt:function(r){ return r.s+" pts"; }});
+  var $ = function(id){ return document.getElementById(id); };
+
+  /* ---------- tema e som ---------- */
+  var savedTheme = lsGet("davi-theme");
+  if(savedTheme==="light"||savedTheme==="dark") document.documentElement.setAttribute("data-theme",savedTheme);
+  function syncTheme(){ var dark = document.documentElement.getAttribute("data-theme")!=="light"; $("iconSun").style.display = dark?"":"none"; $("iconMoon").style.display = dark?"none":""; }
+  syncTheme();
+  $("themeBtn").addEventListener("click",function(){
+    var next = document.documentElement.getAttribute("data-theme")!=="light"?"light":"dark";
+    document.documentElement.setAttribute("data-theme",next); lsSet("davi-theme",next); syncTheme();
+  });
+  var soundOn = lsGet("davi-sound")!=="0", ac = null;
+  function syncSound(){ $("soundIcon").textContent = soundOn?"🔊":"🔇"; }
+  syncSound();
+  function tone(f,st,d,type,v,slide){
+    if(!soundOn) return;
+    if(!ac){ var C = window.AudioContext||window.webkitAudioContext; if(C) ac = new C(); }
+    if(!ac) return; if(ac.state==="suspended") ac.resume();
+    var t = ac.currentTime+st, o = ac.createOscillator(), g = ac.createGain();
+    o.type = type; o.frequency.setValueAtTime(f,t); if(slide) o.frequency.exponentialRampToValueAtTime(slide,t+d);
+    g.gain.setValueAtTime(0.0001,t); g.gain.exponentialRampToValueAtTime(v,t+0.012); g.gain.exponentialRampToValueAtTime(0.0001,t+d);
+    o.connect(g); g.connect(ac.destination); o.start(t); o.stop(t+d+0.03);
+  }
+  function sTap(){ tone(660,0,0.07,"triangle",0.1); }
+  function sOk(){ tone(660,0,0.14,"triangle",0.16); tone(880,0.1,0.14,"triangle",0.16); tone(1175,0.2,0.22,"triangle",0.16); }
+  function sBad(){ tone(220,0,0.2,"sawtooth",0.1,150); tone(160,0.14,0.26,"sawtooth",0.1,110); }
+  function sPage(){ tone(520,0,0.08,"sine",0.1,700); }
+  function sWin(){ [523,659,784,1047,1319].forEach(function(f,i){ tone(f,i*0.12,0.3,"triangle",0.17); }); tone(1047,0.7,0.6,"sine",0.13); }
+  $("soundBtn").addEventListener("click",function(){ soundOn=!soundOn; lsSet("davi-sound",soundOn?"1":"0"); syncSound(); if(soundOn) sTap(); else stopSpeak(); });
+
+  /* ---------- voz (narração) ---------- */
+  var voices = [], voice = null;
+  function pickVoice(){
+    voices = (window.speechSynthesis && speechSynthesis.getVoices()) || [];
+    var best = null, bs = -1;
+    voices.forEach(function(v){
+      if(!/^pt/i.test(v.lang)) return; var s = 1, n = v.name.toLowerCase();
+      if(/pt[-_]br/i.test(v.lang)) s += 2;
+      if(/luciana|francisca|maria|vit[oó]ria|feminina|female|google portugu[eê]s/.test(n)) s += 3;
+      if(/daniel|felipe|male|masculin/.test(n)) s -= 2;
+      if(s>bs){ bs = s; best = v; }
+    });
+    voice = best;
+  }
+  if(window.speechSynthesis){ pickVoice(); speechSynthesis.onvoiceschanged = pickVoice; }
+  function stopSpeak(){ try{ speechSynthesis.cancel(); }catch(e){} }
+  function speak(t){
+    if(!window.speechSynthesis || !soundOn) return; stopSpeak();
+    var u = new SpeechSynthesisUtterance(t); u.lang = "pt-BR"; if(voice) u.voice = voice; u.rate = 0.92; u.pitch = 1.08; speechSynthesis.speak(u);
+  }
+
+  /* ---------- ilustrações ---------- */
+  function person(x,y,s,robe,hair,o){
+    o = o||{};
+    return '<g transform="translate('+x+' '+y+') scale('+s+')">'+
+      (o.arms?'<path d="M-9 -28 L-19 -47 M9 -28 L19 -47" stroke="'+robe+'" stroke-width="5" stroke-linecap="round"/><circle cx="-19" cy="-48" r="3" fill="#e9b98c"/><circle cx="19" cy="-48" r="3" fill="#e9b98c"/>':'')+
+      '<path d="M-11 0 L-14 -30 Q0 -42 14 -30 L11 0 Z" fill="'+robe+'"/>'+
+      (o.belt?'<path d="M-13 -17 L13 -17" stroke="'+o.belt+'" stroke-width="3"/>':'')+
+      '<circle cx="0" cy="-41" r="9.5" fill="#e9b98c"/><path d="M-10 -42 Q0 -58 10 -42 Q0 -49 -10 -42Z" fill="'+hair+'"/>'+
+      (o.beard?'<path d="M-8 -38 Q0 -24 8 -38 Q0 -33 -8 -38Z" fill="'+o.beard+'"/>':'')+
+      (o.helmet?'<path d="M-11 -43 Q0 -61 11 -43Z" fill="#9ca3af"/><path d="M-12 -43 H12" stroke="#6b7280" stroke-width="2"/>':'')+
+      (o.crown?'<path d="M-8 -49 L-8 -58 L-4 -53 L0 -59 L4 -53 L8 -58 L8 -49Z" fill="#facc15"/>':'')+
+      '<circle cx="-3.4" cy="-42" r="1.1" fill="#222"/><circle cx="3.4" cy="-42" r="1.1" fill="#222"/>'+
+      (o.scared?'<ellipse cx="0" cy="-36.5" rx="1.8" ry="2.3" fill="#7a2e1a"/>':'<path d="M-3 -37 Q0 -34.5 3 -37" fill="none" stroke="#a5553a" stroke-width="1" stroke-linecap="round"/>')+'</g>';
+  }
+  function davi(x,y,s,o){ o = o||{}; o.belt = "#7c4a1e"; return person(x,y,s,"#e8a33d","#5a3416",o); }
+  function soldier(x,y,s,o){ o = o||{}; o.helmet = true; o.belt = "#5b4126"; return person(x,y,s,"#4f7cac","#3b2414",o); }
+  function goliath(x,y,s,rot){
+    return '<g transform="translate('+x+' '+y+') scale('+s+') rotate('+(rot||0)+')">'+
+      '<path d="M52 -232 L52 0" stroke="#7a4a21" stroke-width="5"/><path d="M52 -250 L45 -230 L59 -230Z" fill="#cbd5e1"/>'+
+      '<rect x="-22" y="-76" width="17" height="66" rx="4" fill="#b98a5e"/><rect x="5" y="-76" width="17" height="66" rx="4" fill="#b98a5e"/>'+
+      '<rect x="-25" y="-14" width="22" height="14" rx="4" fill="#4b3621"/><rect x="3" y="-14" width="22" height="14" rx="4" fill="#4b3621"/>'+
+      '<path d="M-27 -86 L27 -86 L33 -62 L-33 -62Z" fill="#7c5a3a"/>'+
+      '<path d="M-38 -156 L38 -156 L30 -84 L-30 -84Z" fill="#94a3b8"/><path d="M-35 -138 H35 M-33 -120 H33 M-31 -102 H31" stroke="#64748b" stroke-width="2"/>'+
+      '<rect x="-31" y="-92" width="62" height="8" fill="#5b4126"/><rect x="38" y="-154" width="13" height="58" rx="6" fill="#b98a5e"/>'+
+      '<rect x="-12" y="-162" width="24" height="10" fill="#b98a5e"/><circle cx="0" cy="-170" r="18" fill="#c9966a"/>'+
+      '<path d="M-17 -164 Q0 -136 17 -164 Q0 -154 -17 -164Z" fill="#3b2414"/>'+
+      '<circle cx="-6" cy="-166" r="1.9" fill="#111"/><circle cx="6" cy="-166" r="1.9" fill="#111"/>'+
+      '<path d="M-10 -172 L-3 -169 M10 -172 L3 -169" stroke="#111" stroke-width="2.2" stroke-linecap="round"/>'+
+      '<path d="M-21 -184 Q0 -220 21 -184 Z" fill="#a8a29e"/><path d="M-21 -184 H21" stroke="#78716c" stroke-width="3"/><path d="M0 -201 L0 -216" stroke="#dc2626" stroke-width="5" stroke-linecap="round"/>'+
+      '<circle cx="-44" cy="-112" r="28" fill="#b45309"/><circle cx="-44" cy="-112" r="20" fill="none" stroke="#fcd34d" stroke-width="3"/><circle cx="-44" cy="-112" r="5" fill="#fcd34d"/></g>';
+  }
+  function cloud(x,y,s,c){ return '<g transform="translate('+x+' '+y+') scale('+s+')" fill="'+c+'"><ellipse cx="0" cy="0" rx="34" ry="13"/><ellipse cx="-16" cy="-8" rx="18" ry="12"/><ellipse cx="12" cy="-12" rx="22" ry="14"/></g>'; }
+  function hills(a,b){ return '<path d="M0 150 Q80 124 160 144 T320 138 V200 H0Z" fill="'+a+'"/><path d="M0 172 Q100 154 200 170 T320 164 V200 H0Z" fill="'+b+'"/>'; }
+  function front(b){ return '<path d="M0 178 Q100 166 200 178 T320 174 V200 H0Z" fill="'+b+'"/>'; }
+  function bubble(x,y,w,txt){ return '<g><rect x="'+x+'" y="'+y+'" width="'+w+'" height="24" rx="10" fill="#fff" stroke="#3a2a14" stroke-width="1.5"/><text x="'+(x+w/2)+'" y="'+(y+16.5)+'" font-size="11.5" font-weight="800" fill="#3a2a14" text-anchor="middle" font-family="Nunito,sans-serif">'+txt+'</text></g>'; }
+  var SCENES = [
+    function(){ return '<rect width="320" height="200" fill="url(#sk1)"/><circle cx="262" cy="40" r="20" fill="#fde68a"/>'+cloud(70,40,.9,"#fff")+cloud(170,28,.6,"#fff")+hills("#a7c46e","#8db35a")+
+      '<g fill="#ead7ad" stroke="#b89a64" stroke-width="1"><rect x="226" y="112" width="26" height="22"/><rect x="256" y="102" width="32" height="32"/><rect x="292" y="114" width="22" height="20"/></g><g fill="#7a5a33"><rect x="235" y="122" width="7" height="12"/><rect x="268" y="118" width="8" height="16"/></g>'+
+      davi(110,182,1.45)+'<text x="128" y="128" font-size="22">🎵</text><g font-size="22"><text x="150" y="186">🐑</text><text x="178" y="180">🐑</text><text x="40" y="184">🐑</text></g>'; },
+    function(){ return '<rect width="320" height="200" fill="url(#sk1)"/>'+cloud(60,36,.8,"#fff")+cloud(250,30,.7,"#fff")+hills("#a7c46e","#8db35a")+
+      davi(160,184,1.55,{arms:true})+'<text x="160" y="80" font-size="22" text-anchor="middle">✨</text><g font-size="30"><text x="30" y="186">🦁</text><text x="250" y="186">🐻</text></g><g font-size="20"><text x="200" y="190">🐑</text><text x="96" y="190">🐑</text></g>'; },
+    function(){ return '<rect width="320" height="200" fill="url(#sk2)"/>'+cloud(80,40,.8,"#f3c89a")+hills("#c2a36b","#a98a55")+
+      '<g font-size="22"><text x="8" y="150">⛺</text><text x="36" y="144">⛺</text><text x="264" y="148">⛺</text><text x="290" y="142">⛺</text></g>'+goliath(160,190,.68)+front("#97794a"); },
+    function(){ return '<rect width="320" height="200" fill="url(#sk2)"/>'+hills("#c2a36b","#a98a55")+
+      soldier(40,186,1.2,{scared:true})+soldier(74,188,1.1,{scared:true})+soldier(106,190,1,{scared:true})+person(140,188,1.15,"#7c3aed","#3b2414",{crown:true,beard:"#3b2414",scared:true})+
+      goliath(250,192,.62)+bubble(150,28,104,"Venham lutar!")+'<g font-size="16"><text x="30" y="112">😨</text><text x="96" y="118">😨</text></g>'+front("#97794a"); },
+    function(){ return '<rect width="320" height="200" fill="url(#sk1)"/>'+cloud(250,34,.8,"#fff")+hills("#b9bf78","#9fae62")+
+      davi(70,184,1.45)+'<text x="92" y="188" font-size="20">🧺🍞🧀</text>'+
+      soldier(200,186,1.15)+soldier(236,186,1.15)+soldier(272,186,1.15)+bubble(36,40,120,"Eu vou lutar!"); },
+    function(){ return '<rect width="320" height="200" fill="url(#sk1)"/>'+cloud(70,34,.8,"#fff")+hills("#a7c46e","#8db35a")+
+      '<path d="M0 176 Q80 162 160 178 T320 172 V200 H0Z" fill="#60a5fa"/><path d="M0 184 Q80 172 160 186 T320 180" stroke="#bfdbfe" stroke-width="2" fill="none"/>'+
+      person(250,170,1.3,"#7c3aed","#3b2414",{crown:true,beard:"#3b2414"})+'<text x="274" y="160" font-size="22">🛡️</text>'+davi(120,172,1.4)+
+      '<g fill="#9ca3af" stroke="#6b7280"><ellipse cx="60" cy="186" rx="7" ry="5"/><ellipse cx="80" cy="190" rx="6" ry="4.5"/><ellipse cx="150" cy="188" rx="7" ry="5"/><ellipse cx="170" cy="192" rx="6" ry="4.5"/><ellipse cx="190" cy="186" rx="6.5" ry="5"/></g>'+
+      '<text x="146" y="100" font-size="15" font-weight="800" fill="#1e3a5f" font-family="Nunito,sans-serif">5 pedras</text>'; },
+    function(){ return '<rect width="320" height="200" fill="url(#sk2)"/>'+hills("#c2a36b","#a98a55")+davi(70,186,1.35)+goliath(240,194,.7)+bubble(14,48,132,"Em nome do Senhor!")+front("#97794a"); },
+    function(){ return '<rect width="320" height="200" fill="url(#sk3)"/>'+cloud(60,40,.7,"#fff")+cloud(260,34,.6,"#fff")+hills("#a7c46e","#8db35a")+
+      goliath(232,180,.56,-90)+front("#86ad54")+davi(268,186,1.4,{arms:true})+soldier(30,186,1,{arms:true})+soldier(60,186,1,{arms:true})+
+      '<g font-size="22"><text x="150" y="70">🎉</text><text x="200" y="56">✨</text><text x="100" y="56">🙌</text></g>'; }
+  ];
+  var DEFS = '<defs><linearGradient id="sk1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6cb8f5"/><stop offset="1" stop-color="#d9eeff"/></linearGradient>'+
+    '<linearGradient id="sk2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e98b4f"/><stop offset="1" stop-color="#fbd9a6"/></linearGradient>'+
+    '<linearGradient id="sk3" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7cc4ff"/><stop offset="1" stop-color="#ffe9c9"/></linearGradient></defs>';
+  function uid(p,s){ return s.replace(/(id="|url\(#)sk/g,"$1"+p+"sk"); }
+  function svgScene(i){ return '<svg viewBox="0 0 320 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Ilustração da história">'+uid("s",DEFS+SCENES[i]())+'</svg>'; }
+  $("hero").innerHTML = '<svg viewBox="0 0 320 170" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">'+uid("h",DEFS)+'<rect width="320" height="170" fill="url(#hsk2)"/>'+cloud(150,30,.7,"#f8d2a8")+
+    '<path d="M0 120 Q80 96 160 116 T320 110 V170 H0Z" fill="#c2a36b"/><path d="M0 145 Q100 128 200 142 T320 138 V170 H0Z" fill="#a98a55"/>'+
+    goliath(250,166,.6)+davi(64,162,1.35,{arms:true})+'<path d="M90 96 Q170 34 244 60" stroke="#fff" stroke-width="2" stroke-dasharray="4 5" fill="none"/><circle cx="170" cy="58" r="5" fill="#9ca3af" stroke="#4b5563"/></svg>';
+
+  /* ---------- história ---------- */
+  var STORY = [
+    {t:"Davi, o pastorzinho",x:"Em Belém vivia um menino chamado Davi, o filho mais novo de Jessé. Ele cuidava das ovelhas do pai e tocava harpa muito bem. Deus olhou para o coração de Davi e mandou o profeta Samuel ungi-lo como futuro rei.",r:"1 Samuel 16:1, 16:11-13, 16:18"},
+    {t:"Coragem no campo",x:"Quando um leão ou um urso vinha pegar uma ovelha, Davi corria atrás e salvava a ovelhinha. Ele sabia que era Deus quem lhe dava força e coragem.",r:"1 Samuel 17:34-37"},
+    {t:"O gigante Golias",x:"Um dia, o exército dos filisteus veio lutar contra Israel, no vale de Elá. Entre eles estava Golias, de Gate: um gigante enorme, com capacete de bronze, armadura pesada e uma lança muito grande.",r:"1 Samuel 17:1-7"},
+    {t:"Todos com medo",x:"Golias gritava: “Mandem alguém lutar comigo!”. Ele fez isso de manhã e de tarde, durante quarenta dias. O rei Saul e os soldados de Israel ficaram com muito medo.",r:"1 Samuel 17:8-11, 17:16"},
+    {t:"Davi chega ao acampamento",x:"Jessé mandou Davi levar comida para os seus irmãos, que eram soldados. Lá, Davi ouviu o gigante zombando do povo de Deus e disse ao rei: “Eu vou lutar com ele!”.",r:"1 Samuel 17:17-32"},
+    {t:"Cinco pedras lisas",x:"O rei Saul vestiu Davi com a sua armadura, mas ela era pesada demais, e Davi a tirou. Ele pegou o cajado, escolheu cinco pedras lisas no riacho, guardou-as na bolsa de pastor e levou a sua funda.",r:"1 Samuel 17:38-40"},
+    {t:"Em nome do Senhor",x:"Golias riu de Davi. Mas Davi respondeu: “Você vem contra mim com espada e lança, mas eu vou em nome do Senhor!”. Davi confiava que a batalha era de Deus.",r:"1 Samuel 17:42-47"},
+    {t:"A grande vitória",x:"Davi correu, colocou uma pedra na funda e a atirou. A pedra acertou a testa de Golias, e o gigante caiu com o rosto no chão! Com a ajuda de Deus, o pequeno pastor venceu o gigante.",r:"1 Samuel 17:48-50"}
+  ];
+  var pg = 0;
+  function showPage(i){
+    pg = i; $("scene").innerHTML = svgScene(i); $("stPg").textContent = i+1; $("stTitle").textContent = STORY[i].t; $("stText").textContent = STORY[i].x; $("stRef").textContent = "📖 "+STORY[i].r;
+    $("stPrev").disabled = i===0; $("stNext").textContent = i===STORY.length-1 ? "Fazer o quiz ▶" : "Próxima ▶"; stopSpeak();
+  }
+  $("stPrev").addEventListener("click",function(){ if(pg>0){ sPage(); showPage(pg-1); } });
+  $("stNext").addEventListener("click",function(){ if(pg<STORY.length-1){ sPage(); showPage(pg+1); } else { sOk(); startQuiz(); } });
+  $("stSpeak").addEventListener("click",function(){ sTap(); speak(STORY[pg].t+". "+STORY[pg].x); });
+
+  /* ---------- quiz ---------- */
+  var QS = [
+    {q:"Qual era o trabalho de Davi quando era jovem?",o:["Pastor de ovelhas","Pescador","Carpinteiro","Soldado"],r:"1 Samuel 16:11",w:"Davi cuidava das ovelhas do seu pai."},
+    {q:"Quem era o pai de Davi?",o:["Jessé","Abraão","Saul","Samuel"],r:"1 Samuel 17:12",w:"Davi era o filho mais novo de Jessé."},
+    {q:"Em que cidade morava a família de Davi?",o:["Belém","Jerusalém","Nazaré","Jericó"],r:"1 Samuel 17:12",w:"Jessé era de Belém de Judá."},
+    {q:"Que profeta ungiu Davi como futuro rei?",o:["Samuel","Elias","Moisés","Jonas"],r:"1 Samuel 16:13",w:"Samuel ungiu Davi no meio dos irmãos."},
+    {q:"Que instrumento Davi tocava?",o:["Harpa","Tambor","Trombeta","Flauta"],r:"1 Samuel 16:23",w:"Davi tocava harpa para o rei Saul."},
+    {q:"Que animais Davi enfrentou para proteger as ovelhas?",o:["Um leão e um urso","Um lobo e uma raposa","Uma cobra e um tigre","Um elefante e um touro"],r:"1 Samuel 17:34-36",w:"Davi salvou as ovelhas do leão e do urso."},
+    {q:"De que povo era o gigante Golias?",o:["Filisteus","Egípcios","Romanos","Babilônios"],r:"1 Samuel 17:4",w:"Golias era o campeão dos filisteus."},
+    {q:"De que cidade era Golias?",o:["Gate","Belém","Nínive","Ur"],r:"1 Samuel 17:4",w:"Golias era de Gate."},
+    {q:"Quem era o rei de Israel nessa história?",o:["Saul","Davi","Salomão","Faraó"],r:"1 Samuel 17:31-33",w:"Saul era o rei, e estava com medo."},
+    {q:"Durante quantos dias Golias desafiou Israel?",o:["40","7","3","100"],r:"1 Samuel 17:16",w:"Golias aparecia de manhã e de tarde, por quarenta dias."},
+    {q:"Por que Davi foi ao acampamento do exército?",o:["Para levar comida aos irmãos","Para ser soldado","Para visitar o rei","Para vender ovelhas"],r:"1 Samuel 17:17-18",w:"Jessé mandou Davi levar comida aos irmãos."},
+    {q:"Por que Davi tirou a armadura do rei Saul?",o:["Não estava acostumado e ela pesava","Ela era feia","Era pequena demais","Golias pediu"],r:"1 Samuel 17:38-39",w:"Davi não conseguia andar com a armadura."},
+    {q:"Quantas pedras Davi pegou no riacho?",o:["5","1","3","10"],r:"1 Samuel 17:40",w:"Davi escolheu cinco pedras lisas."},
+    {q:"Que arma Davi usou contra Golias?",o:["Uma funda","Uma espada","Um arco e flecha","Uma lança"],r:"1 Samuel 17:49-50",w:"Com a funda e uma pedra, Davi venceu."},
+    {q:"Onde a pedra acertou Golias?",o:["Na testa","No pé","No escudo","No braço"],r:"1 Samuel 17:49",w:"A pedra acertou a testa do gigante."},
+    {q:"Em nome de quem Davi enfrentou Golias?",o:["Do Senhor (Deus)","Do rei Saul","Dos seus irmãos","Dele mesmo"],r:"1 Samuel 17:45",w:"Davi confiou em Deus, não nas armas."}
+  ];
+  function shuffle(a){ a = a.slice(); for(var i=a.length-1;i>0;i--){ var j = Math.floor(Math.random()*(i+1)), t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
+  var qList = [], qi = 0, qPts = 0, qOk = 0, qT0 = 0, qAns = false;
+  function startQuiz(){
+    RK.setKey("davi-quiz"); $("rkTitle").textContent = "🏆 Ranking · Quiz de Davi (pontos)";
+    qList = shuffle(QS).slice(0,10); qi = 0; qPts = 0; qOk = 0; show("sQuiz"); showQ();
+  }
+  function showQ(){
+    var q = qList[qi]; qAns = false; $("qN").textContent = qi+1; $("qPts").textContent = qPts; $("qText").textContent = q.q; $("qFb").textContent = ""; $("qNext").disabled = true;
+    $("qNext").textContent = qi===9 ? "Ver resultado ▶" : "Próxima ▶";
+    var box = $("qOpts"); box.textContent = "";
+    var order = shuffle([0,1,2,3]); q._ok = order.indexOf(0);
+    order.forEach(function(idx,pos){
+      var b = document.createElement("button"); b.type = "button"; b.className = "opt"; b.textContent = q.o[idx];
+      b.addEventListener("click",function(){ answer(pos,b); }); box.appendChild(b);
+    });
+    qT0 = Date.now();
+  }
+  function answer(pos,btn){
+    if(qAns) return; qAns = true; var q = qList[qi], opts = $("qOpts").children, good = pos===q._ok;
+    Array.prototype.forEach.call(opts,function(o){ o.disabled = true; });
+    opts[q._ok].classList.add("ok");
+    var fb = $("qFb");
+    if(good){
+      var sec = (Date.now()-qT0)/1000, bonus = Math.max(0,5-Math.floor(sec/2)); qPts += 10+bonus; qOk++; sOk();
+      fb.innerHTML = "🎉 Muito bem! +"+(10+bonus)+" pontos"+(bonus?" (bônus de rapidez!)":"")+"<small>"+q.w+" 📖 "+q.r+"</small>";
+    } else {
+      btn.classList.add("bad"); sBad();
+      fb.innerHTML = "Quase! A resposta certa está em verde.<small>"+q.w+" 📖 "+q.r+"</small>";
+    }
+    $("qPts").textContent = qPts; $("qNext").disabled = false;
+  }
+  $("qNext").addEventListener("click",function(){ if(!qAns) return; sTap(); if(qi<9){ qi++; showQ(); } else endQuiz(); });
+  function endQuiz(){
+    var best = parseInt(lsGet("davi-best-quiz")||"0",10)||0, rec = qPts>best; if(rec) lsSet("davi-best-quiz",String(qPts));
+    var stars = qOk>=9?3:(qOk>=7?2:(qOk>=4?1:0));
+    var res = RK.submit(qPts);
+    finish({stars:stars,title:qOk>=9?"Você conhece muito bem a história de Davi!":(qOk>=7?"Muito bem! Quase um especialista!":(qOk>=4?"Bom começo! Leia a história e tente de novo.":"Vamos ler a história de novo e tentar outra vez?")),
+      sub:"Você acertou "+qOk+" de 10 e fez "+qPts+" pontos."+(rec&&qPts>0?" 🏆 Novo recorde!":""),
+      verse:"O Senhor não salva com espada nem com lança. (1 Samuel 17:47)",line:RK.line(res),again:startQuiz});
+    refreshRecs();
+  }
+
+  /* ---------- ordene a história ---------- */
+  var EVENTS = [
+    "Samuel unge o jovem Davi",
+    "Golias desafia o exército de Israel",
+    "Davi leva comida para os irmãos",
+    "Davi tira a armadura do rei Saul",
+    "Davi pega cinco pedras no riacho",
+    "A pedra da funda derruba Golias"
+  ];
+  var oNext = 0, oErr = 0, oDone = false;
+  function startOrder(){
+    RK.setKey("davi-ordem"); $("rkTitle").textContent = "🏆 Ranking · Ordene a história (pontos)";
+    oNext = 0; oErr = 0; oDone = false; $("oErr").textContent = 0; $("oOk").textContent = 0; $("oFb").textContent = "Qual veio primeiro?"; show("sOrder");
+    var box = $("oList"); box.textContent = "";
+    shuffle(EVENTS.map(function(t,i){ return {t:t,i:i}; })).forEach(function(e){
+      var b = document.createElement("button"); b.type = "button"; b.className = "ev"; b.innerHTML = '<span class="n">?</span><span></span>'; b.lastChild.textContent = e.t;
+      b.addEventListener("click",function(){ pickEvent(e.i,b); }); box.appendChild(b);
+    });
+  }
+  function pickEvent(i,b){
+    if(oDone || b.classList.contains("done")) return;
+    if(i===oNext){
+      b.classList.add("done"); b.firstChild.textContent = String(oNext+1); sOk(); oNext++; $("oOk").textContent = oNext;
+      $("oFb").textContent = oNext<6 ? "Certo! E depois, o que aconteceu?" : "";
+      if(oNext===6){ oDone = true; setTimeout(endOrder,900); }
+    } else {
+      oErr++; $("oErr").textContent = oErr; sBad(); b.classList.remove("shake"); void b.offsetWidth; b.classList.add("shake"); $("oFb").textContent = "Ainda não! Pense: o que veio antes?";
+    }
+  }
+  function endOrder(){
+    var pts = Math.max(10,100-oErr*15), stars = oErr===0?3:(oErr<=2?2:1);
+    var best = parseInt(lsGet("davi-best-ordem")||"0",10)||0, rec = pts>best; if(rec) lsSet("davi-best-ordem",String(pts));
+    var res = RK.submit(pts);
+    finish({stars:stars,title:oErr===0?"Perfeito! Você sabe a história na ordem!":"Muito bem! A história está na ordem certa.",sub:"Erros: "+oErr+" · Pontos: "+pts+(rec?" 🏆 Novo recorde!":""),
+      verse:"Eu vou em nome do Senhor. (1 Samuel 17:45)",line:RK.line(res),again:startOrder});
+    refreshRecs();
+  }
+
+  /* ---------- a funda de Davi ---------- */
+  var FW = 360, FH = 400, GROUND = 360, GRAV = 520, cv = $("fCanvas"), cx = cv.getContext("2d");
+  function svgImg(svg){ var im = new Image(); im.src = "data:image/svg+xml;charset=utf-8,"+encodeURIComponent(svg); return im; }
+  var imgG = svgImg('<svg xmlns="http://www.w3.org/2000/svg" viewBox="-80 -255 145 260" width="290" height="520">'+goliath(0,0,1)+'</svg>');
+  var imgD = svgImg('<svg xmlns="http://www.w3.org/2000/svg" viewBox="-25 -62 50 64" width="100" height="128">'+davi(0,0,1)+'</svg>');
+  var fundaRun = false, loopId = 0, fLevel = 1, fStones = 5, fPts = 0, fHits = 0, fState = "aim", stone = null, drag = null;
+  var gT = 0, gX = 302, gS = 0.95, fallA = 0, fMsg = "", fMsgT = 0, lastTs = 0;
+  var DX = 50, DS = 1.4, SX = 66, SY = GROUND-84;
+  function sSling(){ tone(260,0,0.2,"sine",0.12,900); }
+  function sHit(){ tone(140,0,0.18,"square",0.12,70); tone(90,0.55,0.45,"sine",0.32,40); [659,784,988,1319].forEach(function(f,i){ tone(f,0.25+i*0.1,0.25,"triangle",0.14); }); }
+  function sTink(){ tone(1900,0,0.08,"square",0.06); tone(2500,0.04,0.12,"triangle",0.07); }
+  function sMiss(){ tone(320,0,0.28,"sine",0.08,150); }
+  function msg(m){ fMsg = m; fMsgT = 1.6; }
+  function updHud(){ $("fLv").textContent = fLevel; $("fSt").textContent = "●".repeat(fStones)+"○".repeat(5-fStones); $("fPt").textContent = fPts; }
+  function later(fn,ms){ var id = loopId; setTimeout(function(){ if(id===loopId && fundaRun) fn(); },ms); }
+  function fitCanvas(){ var d = Math.min(2,window.devicePixelRatio||1); cv.width = FW*d; cv.height = FH*d; cx.setTransform(d,0,0,d,0,0); }
+  function resetRound(){ fState = "aim"; stone = null; drag = null; fallA = 0; gT = 0; }
+  function startFunda(){
+    RK.setKey("davi-funda"); $("rkTitle").textContent = "🏆 Ranking · A funda de Davi (pontos)";
+    fLevel = 1; fStones = 5; fPts = 0; fHits = 0; resetRound(); show("sFunda"); fitCanvas(); updHud(); msg("Puxe para trás e solte!");
+    loopId++; lastTs = 0; var id = loopId;
+    requestAnimationFrame(function f(ts){ if(!fundaRun || id!==loopId) return; var dt = lastTs ? Math.min(0.035,(ts-lastTs)/1000) : 0.016; lastTs = ts; step(dt); draw(ts/1000); requestAnimationFrame(f); });
+  }
+  function amp(){ return Math.min(45,(fLevel-1)*15); }
+  function step(dt){
+    if(fMsgT>0) fMsgT -= dt;
+    if(fState!=="fall"){ gT += dt; var a = amp(); gX = 302-a+Math.sin(gT*(0.7+fLevel*0.3))*a; }
+    else fallA = Math.min(Math.PI/2, fallA+dt*2.4);
+    if(!stone) return;
+    for(var k=0;k<3 && stone;k++){
+      var h = dt/3; stone.vy += GRAV*h; stone.x += stone.vx*h; stone.y += stone.vy*h;
+      if(fState==="fly") collide(); else if(stone.y>GROUND) stone = null;
+    }
+    if(stone){ stone.trail.push([stone.x,stone.y]); if(stone.trail.length>9) stone.trail.shift(); }
+  }
+  function inR(lx,ly,x1,y1,x2,y2){ return lx>x1 && lx<x2 && ly>y1 && ly<y2; }
+  function collide(){
+    var lx = (stone.x-gX)/gS, ly = (stone.y-GROUND)/gS, fy = ly+178, sx = lx+44, sy = ly+112;
+    if(lx*lx+fy*fy < 12*12) hit();
+    else if(inR(lx,ly,-18,-170,18,-150)) blocked("Quase! Mire um pouquinho mais para cima.");
+    else if(inR(lx,ly,-22,-222,22,-189)) blocked("Bateu no capacete! Mire um pouco mais baixo.");
+    else if(sx*sx+sy*sy < 29*29 || inR(lx,ly,-39,-157,39,0)) blocked("O escudo e a armadura bloquearam! Mire na testa.");
+    else if(stone.x>FW+20 || stone.x<-20 || stone.y>GROUND) miss();
+  }
+  function hit(){
+    fState = "fall"; stone = null; fHits++; var gain = 50+fStones*10+fLevel*10; fPts += gain; updHud(); sHit();
+    msg("🎯 Acertou! Golias caiu! +"+gain);
+    later(function(){ fLevel++; fStones = 5; resetRound(); updHud(); msg("Nível "+fLevel+": o gigante está mais esperto!"); sPage(); },1900);
+  }
+  function blocked(m){ fState = "wait"; stone.vx = -stone.vx*0.25; stone.vy = -90; sTink(); afterThrow(m); }
+  function miss(){ fState = "wait"; stone = null; sMiss(); afterThrow("Passou longe! Tente de novo."); }
+  function afterThrow(m){
+    msg(fStones>0 ? m : "Acabaram as pedras!");
+    if(fStones<=0) later(endFunda,1200); else later(function(){ if(fState==="wait"){ fState = "aim"; stone = null; } },650);
+  }
+  function endFunda(){
+    fState = "over"; var best = parseInt(lsGet("davi-best-funda")||"0",10)||0, rec = fPts>best; if(rec) lsSet("davi-best-funda",String(fPts));
+    var stars = fHits>=5?3:(fHits>=3?2:(fHits>=1?1:0)), res = RK.submit(fPts);
+    finish({stars:stars,title:fHits>=5?"Você é corajoso como Davi!":(fHits>=1?"Muito bem! Golias caiu "+fHits+(fHits>1?" vezes!":" vez!"):"Golias ganhou desta vez. Tente de novo!"),
+      sub:"Você chegou ao nível "+fLevel+" e fez "+fPts+" pontos."+(rec&&fPts>0?" 🏆 Novo recorde!":""),verse:"A batalha é do Senhor. (1 Samuel 17:47)",line:RK.line(res),again:startFunda});
+    refreshRecs();
+  }
+  function pos(e){ var r = cv.getBoundingClientRect(); return {x:(e.clientX-r.left)*FW/r.width, y:(e.clientY-r.top)*FH/r.height}; }
+  function vel(){ if(!drag) return null; var dx = drag.x0-drag.x, dy = drag.y0-drag.y, L = Math.sqrt(dx*dx+dy*dy); if(L<12) return null; var k = Math.min(L,130)/L*6.2; return {x:dx*k,y:dy*k,dx:dx,dy:dy,L:L}; }
+  cv.addEventListener("pointerdown",function(e){ if(fState!=="aim") return; e.preventDefault(); var p = pos(e); drag = {x0:p.x,y0:p.y,x:p.x,y:p.y}; try{ cv.setPointerCapture(e.pointerId); }catch(_){} });
+  cv.addEventListener("pointermove",function(e){ if(!drag) return; var p = pos(e); drag.x = p.x; drag.y = p.y; });
+  cv.addEventListener("pointerup",function(){ var v = vel(); drag = null; if(!v || fState!=="aim") return; fStones--; updHud(); stone = {x:SX,y:SY,vx:v.x,vy:v.y,trail:[]}; fState = "fly"; sSling(); });
+  cv.addEventListener("pointercancel",function(){ drag = null; });
+  function rock(x,y){ cx.beginPath(); cx.arc(x,y,5,0,Math.PI*2); cx.fillStyle = "#9ca3af"; cx.fill(); cx.lineWidth = 1.5; cx.strokeStyle = "#4b5563"; cx.stroke(); }
+  function draw(time){
+    var c = cx, g = c.createLinearGradient(0,0,0,GROUND);
+    g.addColorStop(0,"#f0a46a"); g.addColorStop(1,"#fde2b8"); c.fillStyle = g; c.fillRect(0,0,FW,FH);
+    c.fillStyle = "#fff3c4"; c.beginPath(); c.arc(70,70,24,0,Math.PI*2); c.fill();
+    c.fillStyle = "#c9ab72"; c.beginPath(); c.moveTo(0,300); c.quadraticCurveTo(90,250,180,290); c.quadraticCurveTo(270,325,360,280); c.lineTo(360,FH); c.lineTo(0,FH); c.fill();
+    c.fillStyle = "#a98a55"; c.fillRect(0,GROUND,FW,FH-GROUND); c.fillStyle = "#8a9a4c"; c.fillRect(0,GROUND-3,FW,6);
+    if(imgG.complete && imgG.naturalWidth){ c.save(); c.translate(gX,GROUND); c.rotate(-fallA); c.drawImage(imgG,-80*gS,-255*gS,145*gS,260*gS); c.restore(); }
+    if(fState==="aim" && fLevel<=2){ var pr = 11+Math.sin(time*5)*2.5; c.beginPath(); c.arc(gX,GROUND-178*gS,pr,0,Math.PI*2); c.strokeStyle = "rgba(255,230,0,.95)"; c.lineWidth = 2.5; c.stroke(); }
+    if(imgD.complete && imgD.naturalWidth) c.drawImage(imgD,DX-25*DS,GROUND-62*DS,50*DS,64*DS);
+    var v = vel();
+    if(drag && v && fState==="aim"){
+      var f = Math.min(v.L,130)/v.L*0.32, px = SX-v.dx*f, py = SY-v.dy*f;
+      c.strokeStyle = "#6b4423"; c.lineWidth = 3; c.beginPath(); c.moveTo(SX-6,SY); c.lineTo(px,py); c.lineTo(SX+6,SY); c.stroke(); rock(px,py);
+      var n = fLevel<=2?10:(fLevel<=4?6:4); c.fillStyle = "rgba(255,255,255,.95)";
+      for(var i=1;i<=n;i++){ var t = i*0.045; c.beginPath(); c.arc(SX+v.x*t, SY+v.y*t+0.5*GRAV*t*t, 3.2-i*0.18, 0, Math.PI*2); c.fill(); }
+    } else if(fState==="aim"){ rock(SX,SY); }
+    if(stone){
+      stone.trail.forEach(function(p,i){ c.fillStyle = "rgba(255,255,255,"+(i/stone.trail.length*0.5)+")"; c.beginPath(); c.arc(p[0],p[1],3,0,Math.PI*2); c.fill(); });
+      rock(stone.x,stone.y);
+    }
+    if(fMsgT>0){
+      c.globalAlpha = Math.min(1,fMsgT*2); c.font = "800 17px Nunito, sans-serif"; var w = c.measureText(fMsg).width+28;
+      c.fillStyle = "rgba(40,24,8,.82)"; c.beginPath(); if(c.roundRect) c.roundRect(FW/2-w/2,14,w,34,17); else c.rect(FW/2-w/2,14,w,34); c.fill();
+      c.fillStyle = "#fff"; c.textAlign = "center"; c.textBaseline = "middle"; c.fillText(fMsg,FW/2,31.5); c.globalAlpha = 1;
+    }
+  }
+
+  /* ---------- fim, telas e menu ---------- */
+  var againFn = null;
+  function finish(o){
+    $("eStars").textContent = "★".repeat(o.stars)+"☆".repeat(3-o.stars); $("eStars").style.color = "var(--gold)";
+    $("eTitle").textContent = o.title; $("eSub").textContent = o.sub; $("eVerse").textContent = "📖 "+o.verse; $("rankLine").textContent = o.line; againFn = o.again;
+    show("sEnd"); if(o.stars>=2) sWin(); else sTap();
+  }
+  function show(id){ fundaRun = id==="sFunda"; ["sMenu","sStory","sQuiz","sOrder","sFunda","sEnd"].forEach(function(s){ $(s).classList.toggle("on",s===id); }); stopSpeak(); window.scrollTo(0,0); }
+  function refreshRecs(){
+    var a = lsGet("davi-best-quiz"), b = lsGet("davi-best-ordem");
+    $("recQuiz").textContent = a ? "🏆 Recorde: "+a+" pontos" : ""; $("recOrder").textContent = b ? "🏆 Recorde: "+b+" pontos" : "";
+    var c = lsGet("davi-best-funda"); $("recFunda").textContent = c ? "🏆 Recorde: "+c+" pontos" : "";
+  }
+  $("mStory").addEventListener("click",function(){ sTap(); show("sStory"); showPage(0); });
+  $("mQuiz").addEventListener("click",function(){ sTap(); startQuiz(); });
+  $("mOrder").addEventListener("click",function(){ sTap(); startOrder(); });
+  $("mFunda").addEventListener("click",function(){ sTap(); startFunda(); });
+  ["stBack","qBack","oBack","fBack","eMenu"].forEach(function(id){ $(id).addEventListener("click",function(){ sTap(); show("sMenu"); }); });
+  $("eAgain").addEventListener("click",function(){ if(againFn) againFn(); });
+  document.addEventListener("keydown",function(e){
+    if(e.target && e.target.tagName==="INPUT" && e.key==="Enter"){ e.preventDefault(); e.target.blur(); }
+  });
+  RK.init(); refreshRecs(); $("rkTitle").textContent = "🏆 Ranking · Quiz de Davi (pontos)";
+})();
+</script>
+<script>
+(function(){
+  var wrap=document.getElementById('installWrap'), btn=document.getElementById('installBtn');
+  if(!wrap||!btn) return;
+  var standalone=(window.matchMedia&&window.matchMedia('(display-mode: standalone)').matches)||window.navigator.standalone;
+  if(standalone) return;
+  var deferred=null;
+  window.addEventListener('beforeinstallprompt',function(e){ e.preventDefault(); deferred=e; wrap.hidden=false; });
+  btn.addEventListener('click',function(){
+    if(!deferred) return;
+    deferred.prompt();
+    deferred.userChoice.then(function(){ deferred=null; wrap.hidden=true; });
+  });
+  window.addEventListener('appinstalled',function(){ wrap.hidden=true; });
+  if(/iphone|ipad|ipod/i.test(navigator.userAgent)){
+    btn.textContent='📲 No iPhone: toque em Compartilhar e depois em Adicionar à Tela de Início';
+    btn.disabled=true; wrap.hidden=false;
+  }
+})();
+if('serviceWorker' in navigator){
+  window.addEventListener('load',function(){ navigator.serviceWorker.register('sw.js').catch(function(){}); });
+}
+</script>
+</body>
+</html>

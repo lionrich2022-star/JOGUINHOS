@@ -1,0 +1,83 @@
+JOGUINHOS (PWA) - Criado por Wesley de Jesus
+=============================================
+
+O QUE TEM NESTA PASTA
+- index.html ......... página inicial com todos os jogos
+- domino/ .......... Dominó
+- moto/ ............. Corrida de Moto
+- noe/ .............. A Arca de Noé
+- davi/ ............. Davi e Golias
+- boneca/ ........... Vista a Boneca
+- carros/ ........... Corrida das Fases (carros)
+- cores/ ............ Blocos Coloridos
+- cobrinha/ .......... Jogo da Cobrinha
+- memoria/ ........... Jogo da Memória
+- clarinha/ .......... Aprenda com a Clarinha (contar, letras, cores, inglês)
+- nave/ .............. Nave Espacial
+- blocos/ ............ Quebra-Blocos
+
+Cada jogo é um aplicativo completo e independente (tem os seus próprios ícones,
+fontes e arquivo de funcionamento offline). Dá para usar a pasta inteira ou só
+um jogo.
+
+
+1) COLOCAR NO AR (necessário para instalar no celular e no computador)
+Para o aparelho aceitar "instalar como aplicativo", a pasta precisa estar num
+site com endereço https. Qualquer hospedagem de site simples serve:
+
+- Mais fácil: abra https://app.netlify.com/drop e arraste a pasta
+  "joguinhos-pwa" inteira para a página. Em segundos sai um link.
+- Vercel (que você já usa): crie um projeto novo sem framework e envie esta
+  pasta. Não precisa de build. Pelo terminal, dentro da pasta:
+      npx vercel --prod
+- GitHub Pages: suba a pasta num repositório e ligue o Pages.
+
+Depois é só abrir o link. A página inicial mostra os 12 jogos.
+
+
+2) INSTALAR NO CELULAR
+- Android (Chrome): abra o link do jogo e toque em "📲 Instalar no aparelho",
+  que aparece no rodapé. Ou use o menu (3 pontinhos) > "Instalar app".
+- iPhone (Safari): toque em Compartilhar > "Adicionar à Tela de Início".
+
+3) INSTALAR NO COMPUTADOR
+- Chrome ou Edge: clique no botão "📲 Instalar no aparelho" do rodapé, ou no
+  ícone de instalar que aparece no canto direito da barra de endereço.
+
+
+4) COMO FUNCIONA O OFFLINE
+Na primeira vez que abrir (com internet), o jogo guarda tudo no aparelho. Depois
+disso ele abre e funciona sem internet. Abrindo a página inicial uma vez, todos
+os jogos ficam guardados de uma vez.
+- O recorde de cada jogo fica salvo no próprio aparelho.
+- O nome do jogador e o ranking (top 5 de cada jogo) também ficam salvos no próprio aparelho: servem para várias pessoas que jogam no mesmo celular/computador. O ranking não é compartilhado entre aparelhos.
+- Dominó: 3 níveis (fácil, médio, difícil); o ranking mostra quem tem mais vitórias contra o computador.
+- Nave Espacial: pegue a bomba 💣 para soltar uma rajada que destrói tudo na frente.
+- A voz da Clarinha vem do aparelho (o botão 🎙️ troca de voz).
+- No Jogo da Memória, o botão 🔊 no topo liga e desliga os sons.
+
+
+5) TESTAR RÁPIDO SEM HOSPEDAR
+Dá para dar dois cliques em qualquer index.html e jogar no navegador, mesmo sem
+internet. Só não aparece a opção de instalar (isso exige o endereço https).
+
+
+6) ATUALIZAR UM JOGO DEPOIS
+Troque os arquivos do jogo e, no arquivo sw.js da pasta dele (e no sw.js da
+página inicial), mude a versão (por exemplo de v2 para v3): procure a linha
+que começa com "const CACHE". Assim os aparelhos pegam a versão nova.
+
+
+7) PARA O ANDROID STUDIO
+A pasta de cada jogo funciona sozinha: dá para copiar para a pasta "assets" de
+um app com WebView e abrir o index.html dela. Tudo já está embutido, inclusive
+as fontes, então funciona sem internet.
+
+=== COLOCAR NO AR NO SEU DOMÍNIO (jogos.kryonsystems.com.br) ===
+1) Netlify (mais fácil): entre em app.netlify.com/drop e arraste a PASTA "joguinhos-pwa" (descompactada). Ele cria um endereço de teste na hora.
+   (Se preferir a Vercel, que você já usa: crie um projeto novo, envie a pasta, "Framework: Other", sem comando de build, pasta de saída = a própria pasta.)
+2) No site criado: Domain management > Add a domain > jogos.kryonsystems.com.br
+3) No lugar onde ficam os DNS do kryonsystems.com.br (Registro.br ou outro), crie um registro:
+   Tipo CNAME | Nome: jogos | Valor: o endereço que o Netlify/Vercel mostrar (ex.: nomedosite.netlify.app)
+4) Espere alguns minutos. O https é ativado sozinho. Pronto: jogos.kryonsystems.com.br abre a página com todos os jogos e o botão "Instalar no aparelho" funciona.
+Para atualizar depois: envie a pasta nova no mesmo site; os aparelhos pegam a versão nova sozinhos.
