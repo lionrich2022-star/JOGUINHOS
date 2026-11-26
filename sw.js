@@ -1,6 +1,6 @@
 /* Service worker: guarda tudo no aparelho para funcionar offline. */
 const PREFIX = 'joguinhos-hub-';
-const CACHE = PREFIX + 'v14';
+const CACHE = PREFIX + 'v15';
 const FILES = [
   "./",
   "./index.html",
@@ -225,7 +225,21 @@ const FILES = [
   "./moto3d/fonts/baloo-2-latin-800-normal.woff2",
   "./moto3d/fonts/nunito-latin-600-normal.woff2",
   "./moto3d/fonts/nunito-latin-700-normal.woff2",
-  "./moto3d/fonts/nunito-latin-800-normal.woff2"
+  "./moto3d/fonts/nunito-latin-800-normal.woff2",
+  "./kart3d/",
+  "./kart3d/index.html",
+  "./kart3d/fonts.css",
+  "./kart3d/manifest.webmanifest",
+  "./kart3d/icons/icon-192.png",
+  "./kart3d/icons/icon-512.png",
+  "./kart3d/icons/apple-touch-icon.png",
+  "./kart3d/icons/icon.svg",
+  "./kart3d/fonts/baloo-2-latin-600-normal.woff2",
+  "./kart3d/fonts/baloo-2-latin-700-normal.woff2",
+  "./kart3d/fonts/baloo-2-latin-800-normal.woff2",
+  "./kart3d/fonts/nunito-latin-600-normal.woff2",
+  "./kart3d/fonts/nunito-latin-700-normal.woff2",
+  "./kart3d/fonts/nunito-latin-800-normal.woff2"
 ];
 
 self.addEventListener('install', (e) => {
