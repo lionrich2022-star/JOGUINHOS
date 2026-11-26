@@ -1,6 +1,6 @@
 /* Service worker: guarda tudo no aparelho para funcionar offline. */
 const PREFIX = 'joguinho-penaltis3d-';
-const CACHE = PREFIX + 'v20';
+const CACHE = PREFIX + 'v21';
 const FILES = [
   "./",
   "./index.html",

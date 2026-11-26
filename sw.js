@@ -1,6 +1,6 @@
 /* Service worker: guarda tudo no aparelho para funcionar offline. */
 const PREFIX = 'joguinhos-hub-';
-const CACHE = PREFIX + 'v20';
+const CACHE = PREFIX + 'v21';
 const FILES = [
   "./",
   "./index.html",
@@ -309,7 +309,21 @@ const FILES = [
   "./arca3d/fonts/baloo-2-latin-800-normal.woff2",
   "./arca3d/fonts/nunito-latin-600-normal.woff2",
   "./arca3d/fonts/nunito-latin-700-normal.woff2",
-  "./arca3d/fonts/nunito-latin-800-normal.woff2"
+  "./arca3d/fonts/nunito-latin-800-normal.woff2",
+  "./labirinto3d/",
+  "./labirinto3d/index.html",
+  "./labirinto3d/fonts.css",
+  "./labirinto3d/manifest.webmanifest",
+  "./labirinto3d/icons/icon-192.png",
+  "./labirinto3d/icons/icon-512.png",
+  "./labirinto3d/icons/apple-touch-icon.png",
+  "./labirinto3d/icons/icon.svg",
+  "./labirinto3d/fonts/baloo-2-latin-600-normal.woff2",
+  "./labirinto3d/fonts/baloo-2-latin-700-normal.woff2",
+  "./labirinto3d/fonts/baloo-2-latin-800-normal.woff2",
+  "./labirinto3d/fonts/nunito-latin-600-normal.woff2",
+  "./labirinto3d/fonts/nunito-latin-700-normal.woff2",
+  "./labirinto3d/fonts/nunito-latin-800-normal.woff2"
 ];
 
 self.addEventListener('install', (e) => {
