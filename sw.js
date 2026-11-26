@@ -1,6 +1,6 @@
 /* Service worker: guarda tudo no aparelho para funcionar offline. */
 const PREFIX = 'joguinhos-hub-';
-const CACHE = PREFIX + 'v15';
+const CACHE = PREFIX + 'v16';
 const FILES = [
   "./",
   "./index.html",
@@ -239,7 +239,21 @@ const FILES = [
   "./kart3d/fonts/baloo-2-latin-800-normal.woff2",
   "./kart3d/fonts/nunito-latin-600-normal.woff2",
   "./kart3d/fonts/nunito-latin-700-normal.woff2",
-  "./kart3d/fonts/nunito-latin-800-normal.woff2"
+  "./kart3d/fonts/nunito-latin-800-normal.woff2",
+  "./aviao3d/",
+  "./aviao3d/index.html",
+  "./aviao3d/fonts.css",
+  "./aviao3d/manifest.webmanifest",
+  "./aviao3d/icons/icon-192.png",
+  "./aviao3d/icons/icon-512.png",
+  "./aviao3d/icons/apple-touch-icon.png",
+  "./aviao3d/icons/icon.svg",
+  "./aviao3d/fonts/baloo-2-latin-600-normal.woff2",
+  "./aviao3d/fonts/baloo-2-latin-700-normal.woff2",
+  "./aviao3d/fonts/baloo-2-latin-800-normal.woff2",
+  "./aviao3d/fonts/nunito-latin-600-normal.woff2",
+  "./aviao3d/fonts/nunito-latin-700-normal.woff2",
+  "./aviao3d/fonts/nunito-latin-800-normal.woff2"
 ];
 
 self.addEventListener('install', (e) => {

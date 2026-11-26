@@ -1,6 +1,6 @@
 /* Service worker: guarda tudo no aparelho para funcionar offline. */
 const PREFIX = 'joguinho-kart3d-';
-const CACHE = PREFIX + 'v15';
+const CACHE = PREFIX + 'v16';
 const FILES = [
   "./",
   "./index.html",
