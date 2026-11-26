@@ -1,6 +1,6 @@
 /* Service worker: guarda tudo no aparelho para funcionar offline. */
 const PREFIX = 'joguinhos-hub-';
-const CACHE = PREFIX + 'v12';
+const CACHE = PREFIX + 'v13';
 const FILES = [
   "./",
   "./index.html",
@@ -197,7 +197,21 @@ const FILES = [
   "./nave3d/fonts/baloo-2-latin-800-normal.woff2",
   "./nave3d/fonts/nunito-latin-600-normal.woff2",
   "./nave3d/fonts/nunito-latin-700-normal.woff2",
-  "./nave3d/fonts/nunito-latin-800-normal.woff2"
+  "./nave3d/fonts/nunito-latin-800-normal.woff2",
+  "./jetski/",
+  "./jetski/index.html",
+  "./jetski/fonts.css",
+  "./jetski/manifest.webmanifest",
+  "./jetski/icons/icon-192.png",
+  "./jetski/icons/icon-512.png",
+  "./jetski/icons/apple-touch-icon.png",
+  "./jetski/icons/icon.svg",
+  "./jetski/fonts/baloo-2-latin-600-normal.woff2",
+  "./jetski/fonts/baloo-2-latin-700-normal.woff2",
+  "./jetski/fonts/baloo-2-latin-800-normal.woff2",
+  "./jetski/fonts/nunito-latin-600-normal.woff2",
+  "./jetski/fonts/nunito-latin-700-normal.woff2",
+  "./jetski/fonts/nunito-latin-800-normal.woff2"
 ];
 
 self.addEventListener('install', (e) => {
