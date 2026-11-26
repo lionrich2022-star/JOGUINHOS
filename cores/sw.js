@@ -1,6 +1,6 @@
 /* Service worker: guarda tudo no aparelho para funcionar offline. */
 const PREFIX = 'joguinho-cores-';
-const CACHE = PREFIX + 'v19';
+const CACHE = PREFIX + 'v20';
 const FILES = [
   "./",
   "./index.html",

@@ -1,6 +1,6 @@
 /* Service worker: guarda tudo no aparelho para funcionar offline. */
 const PREFIX = 'joguinhos-hub-';
-const CACHE = PREFIX + 'v19';
+const CACHE = PREFIX + 'v20';
 const FILES = [
   "./",
   "./index.html",
@@ -295,7 +295,21 @@ const FILES = [
   "./boliche3d/fonts/baloo-2-latin-800-normal.woff2",
   "./boliche3d/fonts/nunito-latin-600-normal.woff2",
   "./boliche3d/fonts/nunito-latin-700-normal.woff2",
-  "./boliche3d/fonts/nunito-latin-800-normal.woff2"
+  "./boliche3d/fonts/nunito-latin-800-normal.woff2",
+  "./arca3d/",
+  "./arca3d/index.html",
+  "./arca3d/fonts.css",
+  "./arca3d/manifest.webmanifest",
+  "./arca3d/icons/icon-192.png",
+  "./arca3d/icons/icon-512.png",
+  "./arca3d/icons/apple-touch-icon.png",
+  "./arca3d/icons/icon.svg",
+  "./arca3d/fonts/baloo-2-latin-600-normal.woff2",
+  "./arca3d/fonts/baloo-2-latin-700-normal.woff2",
+  "./arca3d/fonts/baloo-2-latin-800-normal.woff2",
+  "./arca3d/fonts/nunito-latin-600-normal.woff2",
+  "./arca3d/fonts/nunito-latin-700-normal.woff2",
+  "./arca3d/fonts/nunito-latin-800-normal.woff2"
 ];
 
 self.addEventListener('install', (e) => {
