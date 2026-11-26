@@ -1,6 +1,6 @@
 /* Service worker: guarda tudo no aparelho para funcionar offline. */
 const PREFIX = 'joguinhos-hub-';
-const CACHE = PREFIX + 'v13';
+const CACHE = PREFIX + 'v14';
 const FILES = [
   "./",
   "./index.html",
@@ -211,7 +211,21 @@ const FILES = [
   "./jetski/fonts/baloo-2-latin-800-normal.woff2",
   "./jetski/fonts/nunito-latin-600-normal.woff2",
   "./jetski/fonts/nunito-latin-700-normal.woff2",
-  "./jetski/fonts/nunito-latin-800-normal.woff2"
+  "./jetski/fonts/nunito-latin-800-normal.woff2",
+  "./moto3d/",
+  "./moto3d/index.html",
+  "./moto3d/fonts.css",
+  "./moto3d/manifest.webmanifest",
+  "./moto3d/icons/icon-192.png",
+  "./moto3d/icons/icon-512.png",
+  "./moto3d/icons/apple-touch-icon.png",
+  "./moto3d/icons/icon.svg",
+  "./moto3d/fonts/baloo-2-latin-600-normal.woff2",
+  "./moto3d/fonts/baloo-2-latin-700-normal.woff2",
+  "./moto3d/fonts/baloo-2-latin-800-normal.woff2",
+  "./moto3d/fonts/nunito-latin-600-normal.woff2",
+  "./moto3d/fonts/nunito-latin-700-normal.woff2",
+  "./moto3d/fonts/nunito-latin-800-normal.woff2"
 ];
 
 self.addEventListener('install', (e) => {

@@ -12,6 +12,7 @@ O QUE TEM NESTA PASTA
 - cores/ ............ Blocos Coloridos
 - nave3d/ ........... Nave Estelar 3D
 - jetski/ ........... Jet Ski Radical 3D
+- moto3d/ ........... Super Motos 3D
 - cobrinha/ .......... Jogo da Cobrinha
 - memoria/ ........... Jogo da Memória
 - clarinha/ .......... Aprenda com a Clarinha (contar, letras, cores, inglês)
@@ -34,7 +35,7 @@ site com endereço https. Qualquer hospedagem de site simples serve:
       npx vercel --prod
 - GitHub Pages: suba a pasta num repositório e ligue o Pages.
 
-Depois é só abrir o link. A página inicial mostra os 14 jogos.
+Depois é só abrir o link. A página inicial mostra os 15 jogos.
 
 
 2) INSTALAR NO CELULAR
