@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><rect width="512" height="512" fill="#0b1033"/><rect y="300" width="512" height="212" fill="#37b24d"/><rect y="340" width="512" height="30" fill="#2f9e44"/><rect y="400" width="512" height="30" fill="#2f9e44"/>
+<g fill="#facc15"><circle cx="40" cy="120" r="8"/><circle cx="90" cy="110" r="8"/><circle cx="420" cy="115" r="8"/><circle cx="470" cy="125" r="8"/></g><g fill="#60a5fa"><circle cx="65" cy="140" r="8"/><circle cx="445" cy="140" r="8"/></g>
+<rect x="96" y="150" width="320" height="10" fill="#fff"/><rect x="96" y="150" width="10" height="160" fill="#fff"/><rect x="406" y="150" width="10" height="160" fill="#fff"/>
+<g stroke="#fff" stroke-width="2" opacity=".5"><path d="M130 160v150M170 160v150M210 160v150M250 160v150M290 160v150M330 160v150M370 160v150M106 200h300M106 240h300M106 280h300"/></g>
+<circle cx="256" cy="410" r="56" fill="#fff"/><path d="M256 380 l26 19 -10 31 -32 0 -10 -31z" fill="#111"/><path d="M256 380 L256 356 M282 399 L306 392 M272 430 L286 452 M240 430 L226 452 M230 399 L206 392" stroke="#111" stroke-width="6"/>
+<path d="M300 200 Q350 170 380 190" stroke="#fde047" stroke-width="8" fill="none" stroke-dasharray="14 10"/></svg>

@@ -21,6 +21,7 @@ O QUE TEM NESTA PASTA
 - kart3d/ ............ Kart 3D
 - aviao3d/ ........... Avião 3D
 - corredor3d/ ........ Corredor 3D
+- penaltis3d/ ........ Pênaltis 3D
 
 Cada jogo é um aplicativo completo e independente (tem os seus próprios ícones,
 fontes e arquivo de funcionamento offline). Dá para usar a pasta inteira ou só
@@ -38,7 +39,7 @@ site com endereço https. Qualquer hospedagem de site simples serve:
       npx vercel --prod
 - GitHub Pages: suba a pasta num repositório e ligue o Pages.
 
-Depois é só abrir o link. A página inicial mostra os 18 jogos.
+Depois é só abrir o link. A página inicial mostra os 19 jogos.
 
 
 2) INSTALAR NO CELULAR
