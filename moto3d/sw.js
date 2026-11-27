@@ -1,6 +1,6 @@
 /* Service worker: guarda tudo no aparelho para funcionar offline. */
 const PREFIX = 'joguinho-moto3d-';
-const CACHE = PREFIX + 'v26';
+const CACHE = PREFIX + 'v27';
 const FILES = [
   "./",
   "./index.html",

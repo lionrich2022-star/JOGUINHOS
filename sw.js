@@ -1,6 +1,6 @@
 /* Service worker: guarda tudo no aparelho para funcionar offline. */
 const PREFIX = 'joguinhos-hub-';
-const CACHE = PREFIX + 'v26';
+const CACHE = PREFIX + 'v27';
 const FILES = [
   "./",
   "./index.html",
@@ -379,7 +379,21 @@ const FILES = [
   "./jonas3d/fonts/baloo-2-latin-800-normal.woff2",
   "./jonas3d/fonts/nunito-latin-600-normal.woff2",
   "./jonas3d/fonts/nunito-latin-700-normal.woff2",
-  "./jonas3d/fonts/nunito-latin-800-normal.woff2"
+  "./jonas3d/fonts/nunito-latin-800-normal.woff2",
+  "./basquete3d/",
+  "./basquete3d/index.html",
+  "./basquete3d/fonts.css",
+  "./basquete3d/manifest.webmanifest",
+  "./basquete3d/icons/icon-192.png",
+  "./basquete3d/icons/icon-512.png",
+  "./basquete3d/icons/apple-touch-icon.png",
+  "./basquete3d/icons/icon.svg",
+  "./basquete3d/fonts/baloo-2-latin-600-normal.woff2",
+  "./basquete3d/fonts/baloo-2-latin-700-normal.woff2",
+  "./basquete3d/fonts/baloo-2-latin-800-normal.woff2",
+  "./basquete3d/fonts/nunito-latin-600-normal.woff2",
+  "./basquete3d/fonts/nunito-latin-700-normal.woff2",
+  "./basquete3d/fonts/nunito-latin-800-normal.woff2"
 ];
 
 self.addEventListener('install', (e) => {
