@@ -1,6 +1,6 @@
 /* Service worker: guarda tudo no aparelho para funcionar offline. */
 const PREFIX = 'joguinhos-hub-';
-const CACHE = PREFIX + 'v25';
+const CACHE = PREFIX + 'v26';
 const FILES = [
   "./",
   "./index.html",
@@ -365,7 +365,21 @@ const FILES = [
   "./snowboard/fonts/baloo-2-latin-800-normal.woff2",
   "./snowboard/fonts/nunito-latin-600-normal.woff2",
   "./snowboard/fonts/nunito-latin-700-normal.woff2",
-  "./snowboard/fonts/nunito-latin-800-normal.woff2"
+  "./snowboard/fonts/nunito-latin-800-normal.woff2",
+  "./jonas3d/",
+  "./jonas3d/index.html",
+  "./jonas3d/fonts.css",
+  "./jonas3d/manifest.webmanifest",
+  "./jonas3d/icons/icon-192.png",
+  "./jonas3d/icons/icon-512.png",
+  "./jonas3d/icons/apple-touch-icon.png",
+  "./jonas3d/icons/icon.svg",
+  "./jonas3d/fonts/baloo-2-latin-600-normal.woff2",
+  "./jonas3d/fonts/baloo-2-latin-700-normal.woff2",
+  "./jonas3d/fonts/baloo-2-latin-800-normal.woff2",
+  "./jonas3d/fonts/nunito-latin-600-normal.woff2",
+  "./jonas3d/fonts/nunito-latin-700-normal.woff2",
+  "./jonas3d/fonts/nunito-latin-800-normal.woff2"
 ];
 
 self.addEventListener('install', (e) => {
