@@ -1,6 +1,6 @@
 /* Service worker: guarda tudo no aparelho para funcionar offline. */
 const PREFIX = 'joguinhos-hub-';
-const CACHE = PREFIX + 'v24';
+const CACHE = PREFIX + 'v25';
 const FILES = [
   "./",
   "./index.html",
@@ -351,7 +351,21 @@ const FILES = [
   "./minigolfe/fonts/baloo-2-latin-800-normal.woff2",
   "./minigolfe/fonts/nunito-latin-600-normal.woff2",
   "./minigolfe/fonts/nunito-latin-700-normal.woff2",
-  "./minigolfe/fonts/nunito-latin-800-normal.woff2"
+  "./minigolfe/fonts/nunito-latin-800-normal.woff2",
+  "./snowboard/",
+  "./snowboard/index.html",
+  "./snowboard/fonts.css",
+  "./snowboard/manifest.webmanifest",
+  "./snowboard/icons/icon-192.png",
+  "./snowboard/icons/icon-512.png",
+  "./snowboard/icons/apple-touch-icon.png",
+  "./snowboard/icons/icon.svg",
+  "./snowboard/fonts/baloo-2-latin-600-normal.woff2",
+  "./snowboard/fonts/baloo-2-latin-700-normal.woff2",
+  "./snowboard/fonts/baloo-2-latin-800-normal.woff2",
+  "./snowboard/fonts/nunito-latin-600-normal.woff2",
+  "./snowboard/fonts/nunito-latin-700-normal.woff2",
+  "./snowboard/fonts/nunito-latin-800-normal.woff2"
 ];
 
 self.addEventListener('install', (e) => {
